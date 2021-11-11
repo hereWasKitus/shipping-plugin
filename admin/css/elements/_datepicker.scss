@@ -1,0 +1,13 @@
+.ui-datepicker {
+  &-calendar {
+    .ui-state-highlight {
+      a {
+        background: $primary-color none !important;
+      }
+    }
+  }
+
+  &-year {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+.sp-countries {
+  &-container {
+    margin-top: 20px;
+    display: flex;
+  }
+
+  &-list {
+    max-width: 450px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 4px;
+
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+
+    li {
+      display: flex;
+    }
+
+    input {
+      width: 33%;
+    }
+  }
+}

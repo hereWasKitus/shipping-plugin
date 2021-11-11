@@ -1,0 +1,38 @@
+.sp-schedule {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(222px, 1fr));
+
+  width: 100%;
+  max-width: 700px;
+
+  border: 1px solid rgb(234, 234, 234);
+  background-color: rgb(248, 248, 248);
+
+  &-day {
+    padding: 10px;
+    background-color: #fff;
+
+    &__title {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    &__slot {
+      display: flex;
+      flex-wrap: wrap;
+
+      input[type="time"] {
+        width: 49%;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 10px;
+      }
+    }
+
+    .button {
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}

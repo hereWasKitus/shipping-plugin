@@ -1,0 +1,30 @@
+.sp-public-holidays-container {
+  display: flex;
+
+  #sp-public-holidays {
+    margin-left: 20px;
+  }
+}
+
+#sp-public-holidays {
+  width: 400px;
+  padding: 10px;
+
+  border: 1px solid rgb(234, 234, 234);
+  background-color: #fff;
+}
+
+.sp-public-holiday {
+  height: fit-content;
+  display: inline-block;
+  padding: 5px;
+  margin-bottom: 10px;
+
+  background-color: #dddddd;
+  border: 1px solid #00000038;
+  border-radius: 2px;
+
+  &:not(:last-child) {
+    margin-right: 5px;
+  }
+}
