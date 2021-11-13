@@ -18,11 +18,11 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
   ?>
     <h1>Pickup from store</h1>
 
-    <form action="options.php" method="POST">
+    <form class="js-options-form" action="options.php" method="POST">
       <?php
       settings_fields( $this -> options_group );
       do_settings_sections( $this -> options_page_name );
-      submit_button();
+      submit_button('Save changes', 'primary', '');
       ?>
     </form>
   <?php
@@ -56,25 +56,33 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
 
   function sp_pickup_delivery_time_html () {
     $val = get_option('sp_pickup_delivery_time');
+    $schedule_array = json_decode($val, true);
 
-    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     ?>
 
     <div class="sp-schedule">
-      <?php foreach ( $days as $day ): ?>
-      <div class="sp-schedule-day">
-        <h4 class="sp-schedule-day__title"><?= $day ?></h4>
-        <ul class="sp-schedule-day__slots">
-          <li class="sp-schedule-day__slot">
-            <input type="time" step="600">
-            <input type="time" step="600">
-          </li>
-        </ul>
-        <button class="button button-primary">Add +</button>
-      </div>
+      <?php foreach ($days as $day) : ?>
+        <div class="sp-schedule-day" data-day="<?= $day ?>">
+          <h4 class="sp-schedule-day__title"><?= $day ?></h4>
+          <ul class="sp-schedule-day__slots">
+            <?php if ( count($schedule_array) && count( $schedule_array[$day] ) ): ?>
+              <?php foreach ( $schedule_array[$day] as $time_slot ): ?>
+                <li class="sp-schedule-day__slot">
+                  <input type="time" value="<?= $time_slot[0] ?>">
+                  <input type="time" value="<?= $time_slot[1] ?>">
+                  <a href="#" class="js-remove-slot">
+                    <i class="gg-trash"></i>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </ul>
+          <button class="button button-primary js-add-schedule">Add +</button>
+        </div>
       <?php endforeach; ?>
+      <input class="sp-schedule-input" type="hidden" name="sp_pickup_delivery_time" value="<?php echo esc_attr($val) ?>" />
     </div>
-    <!-- <input type="text" name="sp_pickup_delivery_time" value="<?php echo esc_attr( $val ) ?>" /> -->
 
     <?php
   }

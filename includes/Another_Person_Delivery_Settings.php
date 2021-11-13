@@ -22,7 +22,7 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       <?php
       settings_fields( $this -> options_group );
       do_settings_sections( $this -> options_page_name );
-      submit_button();
+      submit_button('Save changes', 'primary', '');
       ?>
     </form>
   <?php

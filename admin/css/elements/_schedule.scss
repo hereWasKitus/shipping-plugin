@@ -15,11 +15,12 @@
     &__title {
       margin-top: 0;
       text-align: center;
+      text-transform: capitalize;
     }
 
     &__slot {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
 
       input[type="time"] {
         width: 49%;
@@ -27,6 +28,15 @@
 
       &:not(:last-child) {
         margin-bottom: 10px;
+      }
+
+      .js-remove-slot {
+        margin-left: 15px;
+        transition: color .15s ease;
+
+        &:hover {
+          color: $red-color;
+        }
       }
     }
 
