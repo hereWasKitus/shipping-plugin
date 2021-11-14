@@ -16,6 +16,7 @@ class Shipping_Plugin {
 
   function __construct () {
     $this -> setup_actions();
+    $this -> setup_ajax();
   }
 
   function setup_actions () {
@@ -34,10 +35,18 @@ class Shipping_Plugin {
     add_action('admin_enqueue_scripts', [$this, 'admin_scripts']);
   }
 
+  function setup_ajax () {
+    add_action('wp_ajax_sp_get_csv_content', [$this, 'sp_get_csv_content']);
+    add_action('wp_ajax_nopriv_sp_get_csv_content', [$this, 'sp_get_csv_content']);
+  }
+
   function admin_scripts () {
     wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, false);
     wp_enqueue_script('jquery-ui-multi-datepicker', PLUGIN_DIR . 'libs/jquery-ui-multi-datepicker/jquery-ui.multidatespicker.js', ['jquery-ui'], null, false);
     wp_enqueue_script('main', PLUGIN_DIR . 'admin/js/main.js', [], null, false);
+    wp_localize_script('main', 'wp', [
+      'ajaxUrl' => admin_url('admin-ajax.php')
+    ]);
 
     wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
     wp_enqueue_style('jquery-ui-multi-datepicker', PLUGIN_DIR . 'libs/jquery-ui-multi-datepicker/jquery-ui.multidatespicker.css');
@@ -56,6 +65,22 @@ class Shipping_Plugin {
     add_submenu_page( PLUGIN_SLUG, 'Delivery within Israel', 'Delivery within Israel', 'administrator', 'israel_delivery', [$israel_delivery, 'page_html'] );
     add_submenu_page( PLUGIN_SLUG, 'Pickup from store', 'Pickup from store', 'administrator', 'store_pickup', [$pickup, 'page_html'] );
     add_submenu_page( PLUGIN_SLUG, 'Delivery for another person', 'Delivery for another person', 'administrator', 'for_another_person', [$another_person_delivery, 'page_html'] );
+  }
+
+  function sp_get_csv_content () {
+    $stream = fopen( $_FILES['file']['tmp_name'], 'r' );
+    // $data = fgetcsv($stream, 1000, ',');
+    $res = [];
+
+    if ($stream !== FALSE) {
+      while (($data = fgetcsv($stream, 1000, ",")) !== FALSE) {
+        array_push( $res, $data );
+      }
+      fclose($stream);
+    }
+
+    echo wp_json_encode( $res );
+    wp_die();
   }
 
 }

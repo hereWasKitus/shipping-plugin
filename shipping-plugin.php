@@ -15,6 +15,12 @@
  * Domain Path:       /languages
  */
 
+/**
+ * TODO:
+ * [-] Move ajax handler to different class
+ * [-] Move markup to reusable template files
+ */
+
 require_once __DIR__ . '/includes/Shipping_Plugin.php';
 
 define( 'PLUGIN_DIR', plugin_dir_url( __FILE__ ) );

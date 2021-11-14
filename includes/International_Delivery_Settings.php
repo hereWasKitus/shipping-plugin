@@ -49,7 +49,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
     $val = get_option('sp_international_delivery_time');
     $schedule_array = json_decode($val, true);
 
-    $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     ?>
 
     <div class="sp-schedule">
@@ -100,19 +100,32 @@ class International_Delivery_Settings implements Setting_Page_Interface {
   }
 
   function sp_international_country_upload_html() {
+    $val = get_option('sp_international_country_upload');
+    $locations = json_decode($val, true);
   ?>
-    <input type="file" name="sp_international_country_upload">
+    <input type="file" class="js-file-upload" class="js-file-upload">
 
     <div class="sp-countries-container">
       <div class="sp-countries-list">
         <h4>Countries</h4>
         <ul>
+        <?php if ( !$locations ): ?>
           <li>
-            <input type="text" placeholder="Name">
-            <input type="text" placeholder="SKU">
-            <input type="number" placeholder="Delivery price">
+            No fields yet
           </li>
+        <?php else: ?>
+          <?php foreach ( $locations as $sku => $data ): ?>
+          <li>
+            <input name="sku" placeholder="SKU" type="text" value="<?= $sku ?>">
+            <input name="name" placeholder="Name" type="text" value="<?= $data['name'] ?>">
+            <input name="price" placeholder="Price" type="number" value="<?= $data['price'] ?>">
+            <a href="#" class="js-remove-location"><i class="gg-trash"></i></a>
+          </li>
+          <?php endforeach; ?>
+        <?php endif; ?>
         </ul>
+        <button class="button button-primary js-add-location">Add</button>
+        <input type="hidden" name="sp_international_country_upload" class="sp-locations-input" value="<?php echo esc_attr($val) ?>">
       </div>
     </div>
 

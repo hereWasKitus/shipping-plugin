@@ -88,13 +88,115 @@
   }
 
   /**
+   * CSV
+   */
+  $('.js-file-upload').on('change', async ({ target }) => {
+    const fd = new FormData();
+    fd.append('file', target.files[0]);
+    fd.append('action', 'sp_get_csv_content');
+
+    const resp = await fetch(wp.ajaxUrl, {
+      method: 'POST',
+      body: fd
+    });
+    const data = await resp.json();
+
+    const countriesContainer = document.querySelector('.sp-countries-list ul');
+    const fragment = document.createDocumentFragment();
+
+    countriesContainer.innerHTML = '';
+
+    data.forEach(([sku, name, price]) => {
+      const el = createLocationElement(sku, name, price);
+      fragment.append(el);
+    });
+
+    countriesContainer.append(fragment);
+  });
+
+  $('.js-add-location').on('click', e => {
+    e.preventDefault();
+    const countriesContainer = document.querySelector('.sp-countries-list ul');
+
+    if (!countriesContainer.querySelector('input')) {
+      countriesContainer.innerHTML = '';
+    }
+
+    const el = createLocationElement();
+    countriesContainer.append(el);
+  })
+
+  $('.sp-countries-container').on('click', '.js-remove-location', e => {
+    e.preventDefault();
+    e.currentTarget.parentElement.remove();
+  })
+
+  function createLocationElement(sku = '', name = '', price = '') {
+    const li = document.createElement('li');
+    const skuInput = document.createElement('input');
+    skuInput.required = true;
+    skuInput.placeholder = 'SKU';
+    skuInput.type = 'text';
+    skuInput.value = sku;
+    skuInput.name = 'sku';
+
+    const nameInput = document.createElement('input');
+    nameInput.required = true;
+    nameInput.placeholder = 'Name';
+    nameInput.type = 'text';
+    nameInput.value = name;
+    nameInput.name = 'name';
+
+    const priceInput = document.createElement('input');
+    priceInput.required = true;
+    priceInput.placeholder = 'Price';
+    priceInput.type = 'number';
+    priceInput.value = +price;
+    priceInput.name = 'price';
+
+    const deleteEl = document.createElement('a');
+    deleteEl.classList.add('js-remove-location');
+
+    const deleteIcon = document.createElement('i');
+    deleteIcon.classList.add('gg-trash');
+
+    deleteEl.append(deleteIcon);
+    li.append(skuInput, nameInput, priceInput, deleteEl);
+
+    return li;
+  }
+
+  function collectLocationValues() {
+    const locations = document.querySelectorAll('.sp-countries-list li');
+    const locationValue = {};
+
+    if (!locations) return '';
+
+    locations.forEach(li => {
+      const skuVal = li.querySelector('[name="sku"]').value;
+
+      locationValue[skuVal] = {
+        name: li.querySelector('[name="name"]').value,
+        price: li.querySelector('[name="price"]').value
+      };
+    });
+
+    return locationValue;
+  }
+
+  /**
    * Form submit
    */
   $('.js-options-form').on('submit', e => {
     e.preventDefault();
 
+    // Schedule
     let scheduleValues = collectScheduleValues();
     document.querySelector('.sp-schedule-input').value = JSON.stringify(scheduleValues);
+
+    // Locations
+    let locationValues = collectLocationValues();
+    document.querySelector('.sp-locations-input').value = JSON.stringify(locationValues);
 
     e.currentTarget.submit();
 

@@ -58,7 +58,7 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
     $val = get_option('sp_pickup_delivery_time');
     $schedule_array = json_decode($val, true);
 
-    $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     ?>
 
     <div class="sp-schedule">
