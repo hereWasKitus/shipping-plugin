@@ -1,31 +1,61 @@
-(($) => $(document).ready(() => {
+(($) => $(document).ready(async () => {
 
   console.log('Shipping plugin script started');
 
   /**
    * Datepicker
    */
-  $('#sp-multi-datepicker').multiDatesPicker({
-    dateFormat: "m d y"
-  });
+  const date = new Date();
+  const targetDate = new Date(`${date.getMonth() + 1} ${date.getDate()} 2020`);
+  const datesContainer = document.querySelector('#sp-public-holidays');
 
-  $('#sp-public-holidays').on('click', (e) => {
-    let dates = $('#sp-multi-datepicker').multiDatesPicker('getDates');
+  const dateOptionName = document.querySelector('.sp-dates-input')?.name;
+  let selectedDates = [];
+  const datesFd = new FormData();
+  datesFd.append('action', 'get_option');
+  datesFd.append('name', dateOptionName);
 
-    if (dates.length === 0) return;
-
-    e.currentTarget.innerHTML = '';
-    const formatedDates = dates.map(dateString => new Date(dateString));
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Novermber', 'December'];
-
-    formatedDates.forEach(date => {
-      const tag = document.createElement('div');
-      tag.classList.add('sp-public-holiday');
-      tag.innerHTML = `${months[date.getMonth()]} ${date.getDate()}`;
-
-      e.currentTarget.append(tag);
+  try {
+    const selectedDatesResponse = await fetch(wp.ajaxUrl, {
+      method: 'POST',
+      body: datesFd
     });
+    selectedDates = await selectedDatesResponse.json();
+  } catch (error) {
+    console.log('No date field!');
+  }
+
+  $('#sp-multi-datepicker').multiDatesPicker({
+    defaultDate: targetDate,
+    yearRange: `2020:2020`,
+    onUpdateDatepicker() {
+      datesContainer.innerHTML = '';
+
+      let dates = $('#sp-multi-datepicker').multiDatesPicker('getDates');
+
+      if (dates.length === 0) return;
+
+      const formatedDates = dates.map(dateString => new Date(dateString));
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Novermber', 'December'];
+
+      formatedDates.forEach((date, index) => {
+        const tag = document.createElement('div');
+        tag.classList.add('sp-public-holiday');
+        tag.innerHTML = `${months[date.getMonth()]} ${date.getDate()} <a href="#" data-date="${dates[index]}" class="sp-public-holiday__remove js-remove-date"><i class="gg-close"></i></a>`;
+
+        datesContainer.append(tag);
+      });
+    }
   });
+
+  if (selectedDates.length) {
+    $('#sp-multi-datepicker').multiDatesPicker('addDates', selectedDates);
+  }
+
+  $('.sp-public-holidays-container').on('click', '.js-remove-date', e => {
+    e.preventDefault();
+    $('#sp-multi-datepicker').multiDatesPicker('removeDates', new Date(e.currentTarget.dataset.date));
+  })
 
   /**
    * Schedule block
@@ -170,7 +200,7 @@
     const locations = document.querySelectorAll('.sp-countries-list li');
     const locationValue = {};
 
-    if (!locations) return '';
+    if (!locations[0]?.querySelector('input')) return '';
 
     locations.forEach(li => {
       const skuVal = li.querySelector('[name="sku"]').value;
@@ -185,18 +215,39 @@
   }
 
   /**
+   * Calendar
+   */
+  // const Calendar = ()
+
+  /**
    * Form submit
    */
   $('.js-options-form').on('submit', e => {
     e.preventDefault();
 
     // Schedule
-    let scheduleValues = collectScheduleValues();
-    document.querySelector('.sp-schedule-input').value = JSON.stringify(scheduleValues);
+    const scheduleInput = document.querySelector('.sp-schedule-input');
+
+    if (scheduleInput) {
+      let scheduleValues = collectScheduleValues();
+      scheduleInput.value = JSON.stringify(scheduleValues);
+    }
 
     // Locations
-    let locationValues = collectLocationValues();
-    document.querySelector('.sp-locations-input').value = JSON.stringify(locationValues);
+    const locationInput = document.querySelector('.sp-locations-input');
+
+    if (locationInput) {
+      let locationValues = collectLocationValues();
+      locationInput.value = JSON.stringify(locationValues);
+    }
+
+    // Datepicker
+    const datesInput = document.querySelector('.sp-dates-input');
+
+    if (datesInput) {
+      const dates = $('#sp-multi-datepicker').multiDatesPicker('getDates');
+      datesInput.value = JSON.stringify(dates);
+    }
 
     e.currentTarget.submit();
 

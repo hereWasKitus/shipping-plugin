@@ -37,7 +37,8 @@ class Shipping_Plugin {
 
   function setup_ajax () {
     add_action('wp_ajax_sp_get_csv_content', [$this, 'sp_get_csv_content']);
-    add_action('wp_ajax_nopriv_sp_get_csv_content', [$this, 'sp_get_csv_content']);
+
+    add_action('wp_ajax_get_option', [$this, 'get_option']);
   }
 
   function admin_scripts () {
@@ -69,7 +70,6 @@ class Shipping_Plugin {
 
   function sp_get_csv_content () {
     $stream = fopen( $_FILES['file']['tmp_name'], 'r' );
-    // $data = fgetcsv($stream, 1000, ',');
     $res = [];
 
     if ($stream !== FALSE) {
@@ -80,6 +80,11 @@ class Shipping_Plugin {
     }
 
     echo wp_json_encode( $res );
+    wp_die();
+  }
+
+  function get_option () {
+    echo get_option( $_POST['name'] );
     wp_die();
   }
 

@@ -95,6 +95,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
     <div class="sp-public-holidays-container">
       <div id="sp-multi-datepicker"></div>
       <div id="sp-public-holidays"></div>
+      <input class="sp-dates-input" type="hidden" name="sp_international_public_holidays" value="<?php echo esc_attr($val) ?>">
     </div>
     <?php
   }

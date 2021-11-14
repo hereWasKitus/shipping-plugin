@@ -34,10 +34,10 @@
         margin-left: 10px;
 
         cursor: pointer;
-        transition: color .15s ease;
+        transition: color $transition-duration ease;
 
         &:hover {
-          color: $red-color;
+          color: $color-red;
         }
       }
 

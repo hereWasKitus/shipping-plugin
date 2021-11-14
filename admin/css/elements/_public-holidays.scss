@@ -16,7 +16,8 @@
 
 .sp-public-holiday {
   height: fit-content;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 5px;
   margin-bottom: 10px;
 
@@ -26,5 +27,15 @@
 
   &:not(:last-child) {
     margin-right: 5px;
+  }
+
+  &__remove {
+    color: #000;
+    display: block;
+    transition: color $transition-duration ease;
+
+    &:hover {
+      color: $color-red;
+    }
   }
 }

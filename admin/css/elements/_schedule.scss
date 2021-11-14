@@ -32,10 +32,10 @@
 
       .js-remove-slot {
         margin-left: 15px;
-        transition: color .15s ease;
+        transition: color $transition-duration ease;
 
         &:hover {
-          color: $red-color;
+          color: $color-red;
         }
       }
     }
