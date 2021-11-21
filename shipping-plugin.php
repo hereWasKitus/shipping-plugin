@@ -19,12 +19,21 @@
  * TODO:
  * [-] Move ajax handler to different class
  * [-] Move markup to reusable template files
+ * [-] Remove from submit unchanged fields
  */
 
 require_once __DIR__ . '/includes/Shipping_Plugin.php';
+require_once __DIR__ . '/woocommerce/Woocommerce_Settings.php';
 
 define( 'PLUGIN_DIR', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_SLUG', 'shipping-plugin' );
 
 $instance = new Shipping_Plugin();
+
+if (
+  in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_and_valid_plugins() )
+  || in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_network_plugins() )
+) {
+  $wcsettings = new Woocommerce_Settings();
+}
