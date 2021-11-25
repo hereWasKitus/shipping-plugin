@@ -213,19 +213,30 @@ class Woocommerce_Settings {
   // TODO: add client countries through this hook
   public function sp_woo_countries( $countries ) {
     $option_countries = json_decode(get_option('sp_international_country_upload'), true);
-    $new_countries = [
-      'Israel' => 'Israel'
-    ];
+    $new_countries = [];
 
-    foreach ($option_countries as $country) {
-      $new_countries[ $country['name'] ] = $country['name'];
+    $deliver_to_israel = get_option('sp_israel_delivery');
+    $international_delivery = get_option('sp_international_delivery');
+
+    if ( $deliver_to_israel ) {
+      $new_countries = [
+        'Israel' => 'Israel'
+      ];
+    }
+
+    if ( $international_delivery ) {
+      foreach ($option_countries as $country) {
+        $new_countries[ $country['name'] ] = $country['name'];
+      }
     }
 
     return $new_countries;
   }
 
   public function sp_deliver_to_another_pesron () {
-    require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/another_person_delivery.php';
+    if ( get_option('another_person_delivery') ) {
+      require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/another_person_delivery.php';
+    }
   }
 
   public function sp_another_person_fields ( $fields ) {
@@ -235,45 +246,35 @@ class Woocommerce_Settings {
     $phone_2 = json_decode(get_option('another_person_delivery_phone_2'), true);
     $work_place = json_decode(get_option('another_person_work_place'), true);
 
-    if ( $first_name['visible'] ) {
-      $fields['billing']['billing_another_person_delivery_first_name'] = [
-        'label' => $first_name['label'],
-        'placeholder' => $first_name['placeholder'],
-        'required' => $first_name['required']
-      ];
-    }
+    $fields['billing']['billing_another_person_delivery_first_name'] = [
+      'label' => $first_name['label'],
+      'placeholder' => $first_name['placeholder'],
+      'required' => $first_name['required']
+    ];
 
-    if ( $last_name['visible'] ) {
-      $fields['billing']['billing_another_person_delivery_last_name'] = [
-        'label' => $last_name['label'],
-        'placeholder' => $last_name['placeholder'],
-        'required' => $last_name['required']
-      ];
-    }
+    $fields['billing']['billing_another_person_delivery_last_name'] = [
+      'label' => $last_name['label'],
+      'placeholder' => $last_name['placeholder'],
+      'required' => $last_name['required']
+    ];
 
-    if ( $phone_1['visible'] ) {
-      $fields['billing']['billing_another_person_delivery_phone_1'] = [
-        'label' => $phone_1['label'],
-        'placeholder' => $phone_1['placeholder'],
-        'required' => $phone_1['required']
-      ];
-    }
+    $fields['billing']['billing_another_person_delivery_phone_1'] = [
+      'label' => $phone_1['label'],
+      'placeholder' => $phone_1['placeholder'],
+      'required' => $phone_1['required']
+    ];
 
-    if ( $phone_2['visible'] ) {
-      $fields['billing']['billing_another_person_delivery_phone_2'] = [
-        'label' => $phone_2['label'],
-        'placeholder' => $phone_2['placeholder'],
-        'required' => $phone_2['required']
-      ];
-    }
+    $fields['billing']['billing_another_person_delivery_phone_2'] = [
+      'label' => $phone_2['label'],
+      'placeholder' => $phone_2['placeholder'],
+      'required' => $phone_2['required']
+    ];
 
-    if ( $work_place['visible'] ) {
-      $fields['billing']['billing_another_person_work_place'] = [
-        'label' => $work_place['label'],
-        'placeholder' => $work_place['placeholder'],
-        'required' => $work_place['required']
-      ];
-    }
+    $fields['billing']['billing_another_person_work_place'] = [
+      'label' => $work_place['label'],
+      'placeholder' => $work_place['placeholder'],
+      'required' => $work_place['required']
+    ];
 
     // If delivery to another person unselected
     if (  count( $_POST ) > 0 && !isset( $_POST['deliver_to_another_person'] ) ) {

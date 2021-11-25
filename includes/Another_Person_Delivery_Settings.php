@@ -59,9 +59,6 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       <li>
         Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
-      <li>
-        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
-      </li>
       <input type="hidden" name="another_person_delivery_first_name" value="<?= get_option('another_person_delivery_first_name') ?>">
     </ul>
     <?php
@@ -79,9 +76,6 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       </li>
       <li>
         Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
-      </li>
-      <li>
-        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <input type="hidden" name="another_person_delivery_last_name" value="<?= get_option('another_person_delivery_last_name') ?>">
     </ul>
@@ -101,9 +95,6 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       <li>
         Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
-      <li>
-        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
-      </li>
       <input type="hidden" name="another_person_delivery_phone_1" value="<?= get_option('another_person_delivery_phone_1') ?>">
     </ul>
     <?php
@@ -122,9 +113,6 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       <li>
         Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
-      <li>
-        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
-      </li>
       <input type="hidden" name="another_person_delivery_phone_2" value="<?= get_option('another_person_delivery_phone_2') ?>">
     </ul>
     <?php
@@ -142,9 +130,6 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       </li>
       <li>
         Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
-      </li>
-      <li>
-        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <input type="hidden" name="another_person_work_place" value="<?= get_option('another_person_work_place') ?>">
     </ul>

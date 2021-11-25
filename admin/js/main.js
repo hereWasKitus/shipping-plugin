@@ -232,8 +232,7 @@
       const resObj = {
         label: inputs[0].value,
         placeholder: inputs[1].value,
-        required: inputs[2].checked,
-        visible: inputs[3].checked,
+        required: inputs[2].checked
       }
       resultInput.value = JSON.stringify(resObj);
     })

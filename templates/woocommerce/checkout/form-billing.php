@@ -43,10 +43,12 @@ defined( 'ABSPATH' ) || exit;
 		?>
 	</div>
 
+	<?php if ( get_option('sp_pickup_delivery') ): ?>
 	<p class="form-row form-row-wide js-layout-buttons">
 		<button data-layout="international_delivery" class="is-active">International delivery</button>
 		<button data-layout="local_pickup">Local pickup</button>
 	</p>
+	<?php endif; ?>
 
 	<div class="woocommerce-billing-fields__field-wrapper js-delivery-fields-container">
 		<?php require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/international_delivery.php' ?>
