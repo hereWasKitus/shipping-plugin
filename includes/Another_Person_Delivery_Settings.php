@@ -18,7 +18,7 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
   ?>
     <h1>Delivery for another person</h1>
 
-    <form action="options.php" method="POST">
+    <form action="options.php" method="POST" class="js-options-form">
       <?php
       settings_fields( $this -> options_group );
       do_settings_sections( $this -> options_page_name );
@@ -34,9 +34,8 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       'another_person_delivery_first_name' => 'First name field settings:',
       'another_person_delivery_last_name' => 'Last name field settings:',
       'another_person_delivery_phone_1' => 'Phone number #1 field settings:',
-      'another_person_delivery_phone_2' => 'Phone number #1 field settings:',
-      'another_person_work_place' => 'Work place field settings:',
-      'another_person_order_note' => 'Order note field settings:',
+      'another_person_delivery_phone_2' => 'Phone number #2 field settings:',
+      'another_person_work_place' => 'Work place field settings:'
     ];
 
     add_settings_section($this -> section_id, '', '', $this -> options_page_name);
@@ -48,115 +47,106 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
   }
 
   function another_person_delivery_first_name_html () {
+    $values = json_decode(get_option('another_person_delivery_first_name'), true);
     ?>
     <ul class="sp-field-settings">
       <li>
-        Label: <input type="text" placeholder="Label">
+        Label: <input type="text" placeholder="Label" value="<?= $values['label'] ?>">
       </li>
       <li>
-        Placeholder: <input type="text" placeholder="Placeholder">
+        Placeholder: <input type="text" placeholder="Placeholder" value="<?= $values['placeholder'] ?>">
       </li>
       <li>
-        Required: <input type="checkbox">
+        Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <li>
-        Show this field: <input type="checkbox">
+        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
+      <input type="hidden" name="another_person_delivery_first_name" value="<?= get_option('another_person_delivery_first_name') ?>">
     </ul>
     <?php
   }
 
   function another_person_delivery_last_name_html () {
+    $values = json_decode(get_option('another_person_delivery_last_name'), true);
     ?>
     <ul class="sp-field-settings">
       <li>
-        Label: <input type="text" placeholder="Label">
+        Label: <input type="text" placeholder="Label" value="<?= $values['label'] ?>">
       </li>
       <li>
-        Placeholder: <input type="text" placeholder="Placeholder">
+        Placeholder: <input type="text" placeholder="Placeholder" value="<?= $values['placeholder'] ?>">
       </li>
       <li>
-        Required: <input type="checkbox">
+        Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <li>
-        Show this field: <input type="checkbox">
+        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
+      <input type="hidden" name="another_person_delivery_last_name" value="<?= get_option('another_person_delivery_last_name') ?>">
     </ul>
     <?php
   }
 
   function another_person_delivery_phone_1_html () {
+    $values = json_decode(get_option('another_person_delivery_phone_1'), true);
     ?>
     <ul class="sp-field-settings">
       <li>
-        Label: <input type="text" placeholder="Label">
+        Label: <input type="text" placeholder="Label" value="<?= $values['label'] ?>">
       </li>
       <li>
-       Placeholder: <input type="text" placeholder="Placeholder">
+        Placeholder: <input type="text" placeholder="Placeholder" value="<?= $values['placeholder'] ?>">
       </li>
       <li>
-        Required: <input type="checkbox">
+        Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <li>
-        Show this field: <input type="checkbox">
+        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
+      <input type="hidden" name="another_person_delivery_phone_1" value="<?= get_option('another_person_delivery_phone_1') ?>">
     </ul>
     <?php
   }
 
   function another_person_delivery_phone_2_html () {
+    $values = json_decode(get_option('another_person_delivery_phone_2'), true);
     ?>
     <ul class="sp-field-settings">
       <li>
-        First name label: <input type="text" placeholder="Label">
+        Label: <input type="text" placeholder="Label" value="<?= $values['label'] ?>">
       </li>
       <li>
-        First name placeholder: <input type="text" placeholder="Placeholder">
+        Placeholder: <input type="text" placeholder="Placeholder" value="<?= $values['placeholder'] ?>">
       </li>
       <li>
-        Required: <input type="checkbox">
+        Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <li>
-        Show this field: <input type="checkbox">
+        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
+      <input type="hidden" name="another_person_delivery_phone_2" value="<?= get_option('another_person_delivery_phone_2') ?>">
     </ul>
     <?php
   }
 
   function another_person_work_place_html () {
+    $values = json_decode(get_option('another_person_work_place'), true);
     ?>
     <ul class="sp-field-settings">
       <li>
-        First name label: <input type="text" placeholder="Label">
+        Label: <input type="text" placeholder="Label" value="<?= $values['label'] ?>">
       </li>
       <li>
-        First name placeholder: <input type="text" placeholder="Placeholder">
+        Placeholder: <input type="text" placeholder="Placeholder" value="<?= $values['placeholder'] ?>">
       </li>
       <li>
-        Required: <input type="checkbox">
+        Required: <input type="checkbox"  <?= isset($values['required']) && $values['required'] ? "checked=\"checked\"" : '' ?>>
       </li>
       <li>
-        Show this field: <input type="checkbox">
+        Show this field: <input type="checkbox" <?= isset($values['visible']) && $values['visible'] ? "checked=\"checked\"" : '' ?>>
       </li>
-    </ul>
-    <?php
-  }
-
-  function another_person_order_note_html () {
-    ?>
-    <ul class="sp-field-settings">
-      <li>
-        First name label: <input type="text" placeholder="Label">
-      </li>
-      <li>
-        First name placeholder: <input type="text" placeholder="Placeholder">
-      </li>
-      <li>
-        Required: <input type="checkbox">
-      </li>
-      <li>
-        Show this field: <input type="checkbox">
-      </li>
+      <input type="hidden" name="another_person_work_place" value="<?= get_option('another_person_work_place') ?>">
     </ul>
     <?php
   }

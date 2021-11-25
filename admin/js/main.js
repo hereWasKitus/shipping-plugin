@@ -216,9 +216,23 @@
   }
 
   /**
-   * Calendar
+   * Another person delivery
    */
-  // const Calendar = ()
+  function collectAnotherPersonDeliverySettings() {
+    const settingsBlocks = document.querySelectorAll('.sp-field-settings');
+
+    settingsBlocks.forEach(item => {
+      const inputs = item.querySelectorAll('input:not([type="hidden"])');
+      const resultInput = item.querySelector('input[type="hidden"]');
+      const resObj = {
+        label: inputs[0].value,
+        placeholder: inputs[1].value,
+        required: inputs[2].checked,
+        visible: inputs[3].checked,
+      }
+      resultInput.value = JSON.stringify(resObj);
+    })
+  }
 
   /**
    * Form submit
@@ -248,6 +262,13 @@
     if (datesInput) {
       const dates = $('#sp-multi-datepicker').multiDatesPicker('getDates');
       datesInput.value = JSON.stringify(dates);
+    }
+
+    // Another person
+    const anotherPersonDelivery = document.querySelector('.sp-field-settings');
+
+    if (anotherPersonDelivery) {
+      collectAnotherPersonDeliverySettings();
     }
 
     e.currentTarget.submit();

@@ -16,6 +16,6 @@
     woocommerce_form_field(
       $field_name,
       $fields[$field_name],
-      ($field_name === 'billing_country' && isset($_POST['country']) && $_POST['country']) ? $_POST['country'] : $checkout->get_value( $field_name ) );
+      ($field_name === 'billing_country' && isset($_POST['country']) && $_POST['country']) ? $_POST['country'] : '' );
   }
 ?>

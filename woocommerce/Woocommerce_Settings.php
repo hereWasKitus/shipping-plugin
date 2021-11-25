@@ -13,10 +13,12 @@ class Woocommerce_Settings {
     add_action('wp_enqueue_scripts', [$this, 'wc_scripts']);
     add_filter( 'woocommerce_checkout_fields', [$this, 'checkout_fields'] );
     add_filter( 'woocommerce_checkout_fields', [$this, 'sp_checkout_fields'] );
+    add_filter( 'woocommerce_checkout_fields', [$this, 'sp_another_person_fields'] );
     add_filter( 'woocommerce_locate_template', [$this, 'woo_adon_plugin_template'], 1, 3 );
     add_action( 'woocommerce_cart_calculate_fees', [$this, 'sp_add_cart_fee'] );
     add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'sp_display_fields_in_order'] );
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
+    add_action('woocommerce_after_checkout_billing_form', [$this, 'sp_deliver_to_another_pesron']);
     // add_filter( 'woocommerce_checkout_fields', [$this, 'sp_checkout_validation'] );
   }
 
@@ -179,8 +181,6 @@ class Woocommerce_Settings {
       $post_data = $_POST;
     }
 
-    error_log( json_encode($post_data) );
-
     if ( isset($post_data['billing_delivery_city']) && $post_data['billing_delivery_city'] && !isset($post_data['delivery']) ) {
       $needle = $post_data['billing_delivery_city'];
       $cities = json_decode(get_option('sp_israel_city_upload'), true);
@@ -224,10 +224,72 @@ class Woocommerce_Settings {
     return $new_countries;
   }
 
+  public function sp_deliver_to_another_pesron () {
+    require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/another_person_delivery.php';
+  }
+
+  public function sp_another_person_fields ( $fields ) {
+    $first_name = json_decode(get_option('another_person_delivery_first_name'), true);
+    $last_name = json_decode(get_option('another_person_delivery_last_name'), true);
+    $phone_1 = json_decode(get_option('another_person_delivery_phone_1'), true);
+    $phone_2 = json_decode(get_option('another_person_delivery_phone_2'), true);
+    $work_place = json_decode(get_option('another_person_work_place'), true);
+
+    if ( $first_name['visible'] ) {
+      $fields['billing']['billing_another_person_delivery_first_name'] = [
+        'label' => $first_name['label'],
+        'placeholder' => $first_name['placeholder'],
+        'required' => $first_name['required']
+      ];
+    }
+
+    if ( $last_name['visible'] ) {
+      $fields['billing']['billing_another_person_delivery_last_name'] = [
+        'label' => $last_name['label'],
+        'placeholder' => $last_name['placeholder'],
+        'required' => $last_name['required']
+      ];
+    }
+
+    if ( $phone_1['visible'] ) {
+      $fields['billing']['billing_another_person_delivery_phone_1'] = [
+        'label' => $phone_1['label'],
+        'placeholder' => $phone_1['placeholder'],
+        'required' => $phone_1['required']
+      ];
+    }
+
+    if ( $phone_2['visible'] ) {
+      $fields['billing']['billing_another_person_delivery_phone_2'] = [
+        'label' => $phone_2['label'],
+        'placeholder' => $phone_2['placeholder'],
+        'required' => $phone_2['required']
+      ];
+    }
+
+    if ( $work_place['visible'] ) {
+      $fields['billing']['billing_another_person_work_place'] = [
+        'label' => $work_place['label'],
+        'placeholder' => $work_place['placeholder'],
+        'required' => $work_place['required']
+      ];
+    }
+
+    if ( count( $_POST ) > 0 && !isset( $_POST['deliver_to_another_person'] ) ) {
+      $fields['billing']['billing_another_person_delivery_first_name']['required'] = false;
+      $fields['billing']['billing_another_person_delivery_last_name']['required'] = false;
+      $fields['billing']['billing_another_person_delivery_phone_1']['required'] = false;
+      $fields['billing']['billing_another_person_delivery_phone_2']['required'] = false;
+      $fields['billing']['billing_another_person_work_place']['required'] = false;
+    }
+
+    return $fields;
+  }
+
   public function sp_display_fields_in_order ($order) {
     echo '<p><strong>'.__('Country: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_country', true ) . '</p>';
 
-    if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
+    if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' ) {
       echo '<p><strong>'.__('Delivery method: ').'</strong> ' . 'pickup from store' . '</p>';
     }
 
@@ -239,5 +301,14 @@ class Woocommerce_Settings {
 
     echo '<p><strong>'.__('Delivery day: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</p>';
     echo '<p><strong>'.__('Delivery time: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</p>';
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
+      echo '<h3>Delivery to another person</h3>';
+      echo '<p><strong>'.__('First name: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) . '</p>';
+      echo '<p><strong>'.__('Last name: ').'</strong> ' . get_post_meta( $order->get_id(), 'billing_another_person_delivery_last_name', true ) . '</p>';
+      echo '<p><strong>'.__('Phone 1: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</p>';
+      echo '<p><strong>'.__('Phone 2: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</p>';
+      echo '<p><strong>'.__('Work place: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) . '</p>';
+    }
   }
 }

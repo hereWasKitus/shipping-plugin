@@ -1,0 +1,9 @@
+.sp-another-person-delivery {
+  input ~ div {
+    display: none;
+  }
+
+  input:checked ~ div {
+    display: block;
+  }
+}
