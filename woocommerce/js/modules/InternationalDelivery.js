@@ -89,9 +89,6 @@ export const InternationalDelivery = (($) => {
       minDate = 1;
     }
 
-    console.log(currentDate.getHours(), nextDayDeliveryHour);
-    console.log(minDate);
-
     $(selector).datepicker({
       // minDate: lastSelectedCountry.toLowerCase() !== 'israel' ? 1 : 0,
       minDate,
