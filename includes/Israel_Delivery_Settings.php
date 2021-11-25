@@ -31,10 +31,10 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
   public function setup_settings() {
     $settings = [
       'sp_israel_delivery' => 'Delivery within Israel:',
+      'sp_israel_minimum_price_amount' => 'Minimum price amount:',
       'sp_israel_delivery_time' => 'Default business hours:',
       'sp_israel_public_holidays' => 'Public holidays:',
       'sp_israel_city_upload' => 'Upload CSV with cities:',
-      'sp_israel_minimum_price_amount' => 'Minimum price amount:',
     ];
 
     add_settings_section($this -> section_id, '', '', $this -> options_page_name);

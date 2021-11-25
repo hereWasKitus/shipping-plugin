@@ -31,10 +31,10 @@ class International_Delivery_Settings implements Setting_Page_Interface {
   public function setup_settings() {
     $settings = [
       'sp_international_delivery' => 'International delivery:',
+      'sp_international_minimum_price_amount' => 'Minimum price amount:',
       'sp_international_delivery_time' => 'Default business hours:',
       'sp_international_public_holidays' => 'Public holidays:',
       'sp_international_country_upload' => 'Upload CSV with countries:',
-      'sp_international_minimum_price_amount' => 'Minimum price amount:',
     ];
 
     add_settings_section($this -> section_id, '', '', $this -> options_page_name);

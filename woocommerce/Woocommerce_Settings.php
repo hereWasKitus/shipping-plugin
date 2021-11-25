@@ -19,7 +19,7 @@ class Woocommerce_Settings {
     add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'sp_display_fields_in_order'] );
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
     add_action('woocommerce_after_checkout_billing_form', [$this, 'sp_deliver_to_another_pesron']);
-    // add_filter( 'woocommerce_checkout_fields', [$this, 'sp_checkout_validation'] );
+    add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
   }
 
   public function wc_scripts () {
@@ -312,5 +312,18 @@ class Woocommerce_Settings {
       echo '<p><strong>'.__('Phone 2: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</p>';
       echo '<p><strong>'.__('Work place: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) . '</p>';
     }
+  }
+
+  public function sp_checkout_validation ($fields, $errors) {
+    $total = WC()->cart->cart_contents_total;
+
+    $minimum_price = $fields['billing_country'] === 'Israel'
+      ? get_option('sp_israel_minimum_price_amount')
+      : get_option('sp_international_minimum_price_amount');
+
+    if ( $total < $minimum_price && !isset($_POST['delivery']) ) {
+      $errors->add( 'validation', 'Minimum order amount is: ' . $minimum_price . '$' );
+    }
+
   }
 }
