@@ -102,6 +102,7 @@ export const InternationalDelivery = (($) => {
       body: fd
     });
 
+    // error if no holiday - need to fix
     let internationalDeliveryHolidays = await res.json();
 
     return internationalDeliveryHolidays.map(dateString => {

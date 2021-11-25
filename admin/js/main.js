@@ -101,13 +101,14 @@
 
     days.forEach(dayEl => {
       let dayName = dayEl.dataset.day;
-      let inputs = dayEl.querySelectorAll('input[type="time"]');
+      let inputs = dayEl.querySelectorAll('input[type="time"]:not(.next-day-delivery)');
       schedule[dayName] = [];
 
       if (!inputs.length) return;
 
       for (let index = 0; index < inputs.length; index += 2) {
         // as every slot have 2 time inputs I increase index by 2 to jump to next slot on next iteration
+
         schedule[dayName] = [
           ...schedule[dayName],
           [inputs[index].value, inputs[index + 1].value]

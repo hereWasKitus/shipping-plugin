@@ -275,7 +275,8 @@ class Woocommerce_Settings {
       ];
     }
 
-    if ( count( $_POST ) > 0 && !isset( $_POST['deliver_to_another_person'] ) ) {
+    // If delivery to another person unselected
+    if (  count( $_POST ) > 0 && !isset( $_POST['deliver_to_another_person'] ) ) {
       $fields['billing']['billing_another_person_delivery_first_name']['required'] = false;
       $fields['billing']['billing_another_person_delivery_last_name']['required'] = false;
       $fields['billing']['billing_another_person_delivery_phone_1']['required'] = false;

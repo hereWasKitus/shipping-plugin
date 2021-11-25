@@ -20,6 +20,7 @@
  * [~] Move ajax handler to different class
  * [-] Move markup to reusable template files
  * [-] Remove from submit unchanged fields
+ * [-] Add default values for fields to prevent errors from javascript side
  */
 
 require_once __DIR__ . '/includes/Shipping_Plugin.php';

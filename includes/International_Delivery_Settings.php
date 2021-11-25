@@ -70,6 +70,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
+          <!-- <input class="next-day-delivery" type="time" style="display: block; margin: 10px auto 0;"> -->
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_international_delivery_time" value="<?php echo esc_attr($val) ?>" />
