@@ -51,7 +51,7 @@ class Shipping_Plugin {
 
     wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
     wp_enqueue_style('jquery-ui-multi-datepicker', PLUGIN_DIR . 'libs/jquery-ui-multi-datepicker/jquery-ui.multidatespicker.css');
-    wp_enqueue_style('main', PLUGIN_DIR . 'admin/css/main.css');
+    wp_enqueue_style('main', PLUGIN_DIR . 'admin/dist/main.css');
   }
 
   function setup_admin_pages () {

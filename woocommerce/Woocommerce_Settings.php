@@ -1,7 +1,9 @@
 <?php
-
-use function PHPSTORM_META\type;
-
+/**
+ * TODO:
+ * [-] add method to receive international delivery fields
+ * [-] add method to receive israel delivery fields
+ */
 class Woocommerce_Settings {
   public function __construct() {
     $this -> setup_hooks();
@@ -9,30 +11,34 @@ class Woocommerce_Settings {
 
   public function setup_hooks () {
     add_action('wp_enqueue_scripts', [$this, 'wc_scripts']);
-    add_filter( 'woocommerce_checkout_fields' , [$this, 'checkout_fields'] );
-    add_filter( 'woocommerce_checkout_fields' , [$this, 'sp_checkout_fields'] );
+    add_filter( 'woocommerce_checkout_fields', [$this, 'checkout_fields'] );
+    add_filter( 'woocommerce_checkout_fields', [$this, 'sp_checkout_fields'] );
     add_filter( 'woocommerce_locate_template', [$this, 'woo_adon_plugin_template'], 1, 3 );
+    add_action( 'woocommerce_cart_calculate_fees', [$this, 'sp_add_cart_fee'] );
+    add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'sp_display_fields_in_order'] );
+    add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
+    // add_filter( 'woocommerce_checkout_fields', [$this, 'sp_checkout_validation'] );
   }
 
   public function wc_scripts () {
     wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, true);
     wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
+    wp_localize_script('sp-checkout', 'wp', [
+      'ajaxUrl' => admin_url('admin-ajax.php')
+    ]);
 
     wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
+    wp_enqueue_style('sp-main', PLUGIN_DIR . 'woocommerce/dist/main.css');
   }
 
   public function checkout_fields ( $fields ) {
     $new_fields = $fields;
 
-    $new_fields['billing']['billing_first_name']['priority'] = 1;
-
-    $new_fields['billing']['billing_last_name']['priority'] = 2;
-
-    $new_fields['billing']['billing_email']['priority'] = 3;
     $new_fields['billing']['billing_email']['class'] = ['form-row-first'];
 
-    $new_fields['billing']['billing_phone']['priority'] = 4;
     $new_fields['billing']['billing_phone']['class'] = ['form-row-last'];
+
+    $new_fields['billing']['billing_state']['required'] = false;
 
     return $new_fields;
   }
@@ -40,12 +46,73 @@ class Woocommerce_Settings {
   public function sp_checkout_fields ( $fields ) {
     $domain = 'sp_woocommerce';
 
+    // billing_delivery_countries
+    // $fields['billing']['billing_delivery_countries'] = [
+    //   'label'     => __('Country 1', $domain),
+    //   'required'  => true,
+    //   'clear'     => true,
+    //   'class'     => ['select2', 'sp-wc-country'],
+    //   'type'      => 'select',
+    //   'options'   => $this -> get_countries_array()
+    // ];
+
     $fields['billing']['billing_delivery_day'] = [
       'label'     => __('Day', $domain),
       'required'  => true,
       'class'     => ['sp-wc-calendar'],
       'clear'     => true
     ];
+
+    $fields['billing']['billing_delivery_timeset'] = [
+      'label'     => __('Time', $domain),
+      'required'  => true,
+      'class'     => ['sp-wc-time'],
+      'clear'     => true,
+      'type'      => 'select',
+      'options'   => [
+        '' => 'Select time'
+      ]
+    ];
+
+
+    $fields['billing']['billing_delivery_city'] = [
+      'label'     => __('Town / City 1', $domain),
+      'required'  => true,
+      'clear'     => true,
+      'class'     => ['sp-wc-city'],
+      'type'      => 'select',
+      'options'   => $this -> get_cities_array()
+    ];
+
+    $fields['billing']['billing_delivery_house'] = [
+      'label'     => __('House number', $domain),
+      'required'  => false,
+      'clear'     => true,
+    ];
+
+    $fields['billing']['billing_delivery_floor'] = [
+      'label'     => __('Floor', $domain),
+      'required'  => false,
+      'clear'     => true,
+    ];
+
+    if ( isset($_POST['billing_country']) && $_POST['billing_country'] !== 'Israel' ) {
+      $fields['billing']['billing_delivery_city']['required'] = false;
+    }
+
+    if ( isset($_POST['billing_country']) && $_POST['billing_country'] == 'Israel' ) {
+      $fields['billing']['billing_city']['required'] = false;
+      $fields['billing']['billing_postcode']['required'] = false;
+    }
+
+    if ( isset($_POST['delivery']) && $_POST['delivery'] == 'local_pickup' ) {
+      $fields['billing']['billing_postcode']['required'] = false;
+      $fields['billing']['billing_address_1']['required'] = false;
+      $fields['billing']['billing_city']['required'] = false;
+      $fields['billing']['billing_delivery_city']['required'] = false;
+      $fields['billing']['billing_postcode']['required'] = false;
+      $fields['billing']['billing_country']['required'] = false;
+    }
 
     return $fields;
   }
@@ -72,5 +139,105 @@ class Woocommerce_Settings {
     $template = $_template;
 
    return $template;
+  }
+
+  public function get_countries_array () {
+    $countries = json_decode( get_option('sp_international_country_upload'), true);
+    $countries_options = [
+      '' => 'Select country',
+      'Israel' => 'Israel'
+    ];
+
+    foreach ($countries as $sku => $country) {
+      $countries_options[ $country['name'] ] = "{$country['name']} +{$country['price']}";
+    }
+
+    return $countries_options;
+  }
+
+  public function get_cities_array () {
+    $cities = json_decode( get_option('sp_israel_city_upload'), true);
+    $city_options = [
+      '' => 'Select city'
+    ];
+
+    foreach ($cities as $city) {
+      $city_options[ $city['name'] ] = "{$city['name']} +{$city['price']}";
+    }
+
+    return $city_options;
+  }
+
+  public function sp_add_cart_fee () {
+    if ( ! $_POST || ( is_admin() && ! is_ajax() ) ) {
+      return;
+    }
+
+    if ( isset( $_POST['post_data'] ) ) {
+      parse_str( $_POST['post_data'], $post_data );
+    } else {
+      $post_data = $_POST;
+    }
+
+    error_log( json_encode($post_data) );
+
+    if ( isset($post_data['billing_delivery_city']) && $post_data['billing_delivery_city'] && !isset($post_data['delivery']) ) {
+      $needle = $post_data['billing_delivery_city'];
+      $cities = json_decode(get_option('sp_israel_city_upload'), true);
+      $city = array_values(array_filter( array_values($cities), function ($item) use ($needle) {
+        return $item['name'] === $needle;
+      } ));
+
+      if ( $city && $city[0]['price'] ) {
+        WC()->cart->add_fee( __('Shipping to city', 'woocommerce'), $city[0]['price'] );
+      }
+
+      return;
+    }
+
+    if ( isset($post_data['billing_country']) && $post_data['billing_country'] && !isset($post_data['delivery']) ) {
+      $needle = $post_data['billing_country'];
+      $countries = json_decode(get_option('sp_international_country_upload'), true);
+      $country = array_values(array_filter( array_values($countries), function ($item) use ($needle) {
+        return $item['name'] === $needle;
+      } ));
+
+      if ( $country && $country[0]['price'] ) {
+        WC()->cart->add_fee( __('Shipping to country', 'woocommerce'), $country[0]['price'] );
+      }
+
+      return;
+    }
+  }
+
+  // TODO: add client countries through this hook
+  public function sp_woo_countries( $countries ) {
+    $option_countries = json_decode(get_option('sp_international_country_upload'), true);
+    $new_countries = [
+      'Israel' => 'Israel'
+    ];
+
+    foreach ($option_countries as $country) {
+      $new_countries[ $country['name'] ] = $country['name'];
+    }
+
+    return $new_countries;
+  }
+
+  public function sp_display_fields_in_order ($order) {
+    echo '<p><strong>'.__('Country: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_country', true ) . '</p>';
+
+    if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
+      echo '<p><strong>'.__('Delivery method: ').'</strong> ' . 'pickup from store' . '</p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' && get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
+      echo '<p><strong>'.__('City: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_city', true ) . '</p>';
+      echo '<p><strong>'.__('House: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_house', true ) . '</p>';
+      echo '<p><strong>'.__('Floor: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</p>';
+    }
+
+    echo '<p><strong>'.__('Delivery day: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</p>';
+    echo '<p><strong>'.__('Delivery time: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</p>';
   }
 }

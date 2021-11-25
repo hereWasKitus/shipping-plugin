@@ -71,8 +71,8 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
             <?php if ( count($schedule_array) && count( $schedule_array[$day] ) ): ?>
               <?php foreach ( $schedule_array[$day] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
-                  <input type="time" value="<?= $time_slot[0] ?>">
-                  <input type="time" value="<?= $time_slot[1] ?>">
+                  <input type="time" required value="<?= $time_slot[0] ?>">
+                  <input type="time" required value="<?= $time_slot[1] ?>">
                   <a href="#" class="js-remove-slot">
                     <i class="gg-trash"></i>
                   </a>

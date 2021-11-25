@@ -77,10 +77,11 @@
 
     let from = document.createElement('input');
     from.type = 'time';
-    from.name = ''
+    from.required = true;
 
     let to = document.createElement('input');
     to.type = 'time';
+    from.required = true;
 
     let removeEl = document.createElement('a');
     removeEl.classList.add('js-remove-slot');
