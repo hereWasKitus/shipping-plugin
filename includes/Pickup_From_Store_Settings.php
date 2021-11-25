@@ -66,8 +66,8 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
         <div class="sp-schedule-day" data-day="<?= $day ?>">
           <h4 class="sp-schedule-day__title"><?= $day ?></h4>
           <ul class="sp-schedule-day__slots">
-            <?php if ( count($schedule_array) && count( $schedule_array[$day] ) ): ?>
-              <?php foreach ( $schedule_array[$day] as $time_slot ): ?>
+            <?php if ( count($schedule_array) && count( $schedule_array[$day]['slots'] ) ): ?>
+              <?php foreach ( $schedule_array[$day]['slots'] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
                   <input type="time" required value="<?= $time_slot[0] ?>">
                   <input type="time" required value="<?= $time_slot[1] ?>">
@@ -79,6 +79,7 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
+          <input value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery" type="time" style="display: block; margin: 10px auto 0;">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_pickup_delivery_time" value="<?php echo esc_attr($val) ?>" />

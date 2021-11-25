@@ -102,18 +102,22 @@
     days.forEach(dayEl => {
       let dayName = dayEl.dataset.day;
       let inputs = dayEl.querySelectorAll('input[type="time"]:not(.next-day-delivery)');
-      schedule[dayName] = [];
+      schedule[dayName] = {
+        slots: [],
+        nextDayDelivery: dayEl.querySelector('.next-day-delivery').value
+      };
 
       if (!inputs.length) return;
 
       for (let index = 0; index < inputs.length; index += 2) {
         // as every slot have 2 time inputs I increase index by 2 to jump to next slot on next iteration
 
-        schedule[dayName] = [
-          ...schedule[dayName],
+        schedule[dayName].slots = [
+          ...schedule[dayName].slots,
           [inputs[index].value, inputs[index + 1].value]
         ];
       }
+
     });
 
     return schedule;
@@ -247,6 +251,8 @@
     if (scheduleInput) {
       let scheduleValues = collectScheduleValues();
       scheduleInput.value = JSON.stringify(scheduleValues);
+      console.log(JSON.stringify(scheduleValues));
+      console.log(scheduleInput, scheduleInput.value);
     }
 
     // Locations

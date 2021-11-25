@@ -9,7 +9,8 @@ export const InternationalDelivery = (($) => {
   let localPickupDeliveryTime = [];
 
   let lastSelectedCountry = '';
-  let layoutName = '';
+  let currentCountry = '';
+  let layoutName = 'international_delivery';
 
   let internationalDeliveryHolidays = [];
   let israelDeliveryHolidays = [];
@@ -20,11 +21,11 @@ export const InternationalDelivery = (($) => {
     israelDeliveryHolidays = await getPublicHolidays('israel');
     localPickupDeliveryHolidays = await getPublicHolidays('pickup');
 
-    initDatePicker(dateInputSelector, internationalDeliveryHolidays);
-
     internationalDeliveryTime = await getDeliveryTime('international');
     israelDeliveryTime = await getDeliveryTime('israel');
     localPickupDeliveryTime = await getDeliveryTime('pickup');
+
+    initDatePicker(dateInputSelector, internationalDeliveryHolidays);
 
     bindEvents();
     $(document.body).on('sp_layout_change_finished', handleLayoutChange);
@@ -59,8 +60,41 @@ export const InternationalDelivery = (($) => {
   }
 
   function initDatePicker(selector, holidays) {
+    let minDate = 1;
+    let deliveryTime = internationalDeliveryTime;
+
+    if (layoutName === 'local_pickup') {
+      minDate = 0;
+      deliveryTime = localPickupDeliveryTime;
+    }
+
+    if (layoutName === 'international_delivery') {
+      minDate = 1;
+    }
+
+    if (layoutName === 'international_delivery' && currentCountry.toLowerCase() === 'israel') {
+      minDate = 0;
+      deliveryTime = israelDeliveryTime;
+    }
+
+    let currentDate = new Date();
+    let currentDayName = days[currentDate.getDay()];
+    let nextDayDeliveryHour = deliveryTime[currentDayName].nextDayDelivery
+      ? deliveryTime[currentDayName].nextDayDelivery.split(':')[0]
+      : 999;
+
+    minDate = currentDate.getHours() > nextDayDeliveryHour ? 1 : 0;
+
+    if (layoutName === 'international_delivery' && currentCountry !== 'Israel') {
+      minDate = 1;
+    }
+
+    console.log(currentDate.getHours(), nextDayDeliveryHour);
+    console.log(minDate);
+
     $(selector).datepicker({
-      minDate: lastSelectedCountry.toLowerCase() !== 'israel' ? 1 : 0,
+      // minDate: lastSelectedCountry.toLowerCase() !== 'israel' ? 1 : 0,
+      minDate,
       beforeShowDay(date) {
         let string = jQuery.datepicker.formatDate('mm/dd/yy', date);
 
@@ -125,10 +159,10 @@ export const InternationalDelivery = (($) => {
     const dayName = days[new Date(dateString).getDay()];
     // add condition to use israel delivery time
     let daySlots = lastSelectedCountry.toLowerCase() === 'israel'
-      ? israelDeliveryTime[dayName]
-      : internationalDeliveryTime[dayName];
+      ? israelDeliveryTime[dayName].slots
+      : internationalDeliveryTime[dayName].slots;
 
-    daySlots = layoutName === 'local_pickup' ? localPickupDeliveryTime[dayName] : daySlots;
+    daySlots = layoutName === 'local_pickup' ? localPickupDeliveryTime[dayName].slots : daySlots;
 
     if (daySlots) {
       daySlots = daySlots.map(([from, to]) => {
@@ -166,6 +200,7 @@ export const InternationalDelivery = (($) => {
 
   async function handleCountryChange(country) {
     // it will trigger fee change hook on the backend
+    currentCountry = country;
     await switchCheckoutFields(country);
     lastSelectedCountry = country;
     $(document.body).trigger('update_checkout');
