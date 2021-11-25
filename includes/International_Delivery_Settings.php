@@ -32,6 +32,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
     $settings = [
       'sp_international_delivery' => 'International delivery:',
       'sp_international_minimum_price_amount' => 'Minimum price amount:',
+      'sp_international_tooltip' => 'Tooltip text:',
       'sp_international_delivery_time' => 'Default business hours:',
       'sp_international_public_holidays' => 'Public holidays:',
       'sp_international_country_upload' => 'Upload CSV with countries:',
@@ -43,6 +44,13 @@ class International_Delivery_Settings implements Setting_Page_Interface {
       register_setting($this -> options_group, $name);
       add_settings_field($name, $title, [$this, "{$name}_html"], $this -> options_page_name, $this -> section_id);
     }
+  }
+
+  function sp_international_tooltip_html () {
+    $val = get_option('sp_international_tooltip');
+    ?>
+    <input type="text" name="sp_international_tooltip" value="<?= esc_attr($val) ?>">
+    <?php
   }
 
   function sp_international_delivery_time_html() {

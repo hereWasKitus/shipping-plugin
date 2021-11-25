@@ -15,8 +15,10 @@ export const InternationalDelivery = (($) => {
   let internationalDeliveryHolidays = [];
   let israelDeliveryHolidays = [];
   let localPickupDeliveryHolidays = [];
+  let tooltipText = '';
 
   async function init() {
+    tooltipText = await getToolTipText();
     internationalDeliveryHolidays = await getPublicHolidays('international');
     israelDeliveryHolidays = await getPublicHolidays('israel');
     localPickupDeliveryHolidays = await getPublicHolidays('pickup');
@@ -32,6 +34,20 @@ export const InternationalDelivery = (($) => {
     $(document).on('change', countrySelectSelector, e => handleCountryChange(e.currentTarget.value));
 
     updateLayoutOnSelectValue();
+  }
+
+  async function getToolTipText() {
+    const body = new FormData();
+    body.append('action', 'get_option');
+    body.append('name', 'sp_international_tooltip');
+
+    const resp = await fetch(wp.ajaxUrl, {
+      method: 'POST',
+      body
+    });
+
+    const tooltip = await resp.text();
+    return tooltip;
   }
 
   function updateLayoutOnSelectValue() {
@@ -94,8 +110,11 @@ export const InternationalDelivery = (($) => {
       minDate,
       beforeShowDay(date) {
         let string = jQuery.datepicker.formatDate('mm/dd/yy', date);
+        let tooltip = holidays.indexOf(string) > -1 || date.getTime() < currentDate.getTime()
+          ? tooltipText
+          : '';
 
-        return [holidays.indexOf(string) === -1];
+        return [holidays.indexOf(string) === -1, "", tooltip];
       }
     });
   }

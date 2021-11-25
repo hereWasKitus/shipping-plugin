@@ -210,23 +210,19 @@ class Woocommerce_Settings {
     }
   }
 
-  // TODO: add client countries through this hook
   public function sp_woo_countries( $countries ) {
-    $option_countries = json_decode(get_option('sp_international_country_upload'), true);
+    $international_delivery_countries = json_decode(get_option('sp_international_country_upload'), true);
     $new_countries = [];
 
-    $deliver_to_israel = get_option('sp_israel_delivery');
-    $international_delivery = get_option('sp_international_delivery');
-
-    if ( $deliver_to_israel ) {
+    if ( get_option('sp_israel_delivery') ) {
       $new_countries = [
         'Israel' => 'Israel'
       ];
     }
 
-    if ( $international_delivery ) {
-      foreach ($option_countries as $country) {
-        $new_countries[ $country['name'] ] = $country['name'];
+    if ( get_option('sp_international_delivery') ) {
+      foreach ($international_delivery_countries as $country) {
+        $new_countries[ $country['name'] ] = "{$country['name']}";
       }
     }
 

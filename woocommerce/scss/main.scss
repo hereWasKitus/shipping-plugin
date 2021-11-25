@@ -11,3 +11,9 @@
 .woocommerce-shipping-totals.shipping {
   display: none;
 }
+
+.ui-datepicker {
+  td.ui-state-disabled {
+    pointer-events: auto;
+  }
+}

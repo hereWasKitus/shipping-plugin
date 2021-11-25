@@ -18,7 +18,7 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
   ?>
     <h1>Pickup from store</h1>
 
-    <form class="js-options-form" action="options.php" method="POST">
+    <form class="js-options-form form-pickup-from-store" action="options.php" method="POST">
       <?php
       settings_fields( $this -> options_group );
       do_settings_sections( $this -> options_page_name );
@@ -79,7 +79,7 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
-          <input value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery" type="time" style="display: block; margin: 10px auto 0;">
+          <input value="" class="next-day-delivery" type="hidden">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_pickup_delivery_time" value="<?php echo esc_attr($val) ?>" />

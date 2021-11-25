@@ -41,6 +41,7 @@ defined( 'ABSPATH' ) || exit;
 			woocommerce_form_field( $field_name, $fields[$field_name], $checkout->get_value( $field_name ) );
 		}
 		?>
+		<input type="hidden" name="is_checkout" value="true">
 	</div>
 
 	<?php if ( get_option('sp_pickup_delivery') ): ?>
