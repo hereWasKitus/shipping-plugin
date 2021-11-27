@@ -8,4 +8,8 @@
   const { LayoutController } = await import('./modules/LayoutController.js');
   LayoutController.init();
 
+  // Blessing
+  const { Blessing } = await import('./modules/Blessing.js');
+  Blessing.init();
+
 }))(jQuery);

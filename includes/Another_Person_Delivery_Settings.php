@@ -2,7 +2,6 @@
 require_once __DIR__ . '/Setting_Page_Interface.php';
 
 class Another_Person_Delivery_Settings implements Setting_Page_Interface {
-  private $prefix;
   private $options_group;
   private $options_page_name;
   private $section_id;
@@ -35,7 +34,8 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       'another_person_delivery_last_name' => 'Last name field settings:',
       'another_person_delivery_phone_1' => 'Phone number #1 field settings:',
       'another_person_delivery_phone_2' => 'Phone number #2 field settings:',
-      'another_person_work_place' => 'Work place field settings:'
+      'another_person_work_place' => 'Work place field settings:',
+      'another_person_blessing' => 'Blessings:'
     ];
 
     add_settings_section($this -> section_id, '', '', $this -> options_page_name);
@@ -144,6 +144,29 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       <input type="checkbox" name="another_person_delivery" <?= $val ? 'checked="cheked"' : '' ?>>
       <span class="slider round"></span>
     </label>
+    <?php
+  }
+
+  public function another_person_blessing_html () {
+    $val = json_decode(get_option('another_person_blessing'), true);
+    ?>
+    <div class="blessings-section">
+      <button class="button button-primary" id="js-add-blessing">Add</button>
+
+      <div class="blessings-container">
+        <?php
+        if ( count($val) ):
+          foreach ( $val as $item ):
+        ?>
+        <blessing-list category="<?= $item['categoryName'] ?>" items="<?= implode('|', $item['items']) ?>"></blessing-list>
+        <?php
+          endforeach;
+        endif;
+        ?>
+      </div>
+
+      <input type="hidden" name="another_person_blessing" value="<?= esc_attr($val) ?>">
+    </div>
     <?php
   }
 }

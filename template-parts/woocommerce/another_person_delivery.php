@@ -7,8 +7,11 @@ $included_fields = [
   'billing_another_person_delivery_last_name',
   'billing_another_person_delivery_phone_1',
   'billing_another_person_delivery_phone_2',
-  'billing_another_person_work_place'
+  'billing_another_person_work_place',
+  'billing_another_person_blessing'
 ];
+
+$blessings = json_decode(get_option('another_person_blessing'), true);
 ?>
 <div class="sp-another-person-delivery">
   <input type="checkbox" name="deliver_to_another_person"><span>Deliver to another person?</span>
@@ -23,5 +26,27 @@ $included_fields = [
       );
     }
     ?>
+
+    <?php if ( count($blessings) ): ?>
+    <button class="button button-primary" id="js-choose-blessing">Choose blessing</button>
+    <?php endif; ?>
+
+    <div class="blessing-popup" id="blessing-popup">
+      <div class="blessing-block" id="blessing-popup">
+        <select id="js-blessing-category">
+          <option disabled selected>Choose category</option>
+
+          <?php foreach ( $blessings as $blessing ): ?>
+          <option value="<?= $blessing['categoryName'] ?>"><?= $blessing['categoryName'] ?></option>
+          <?php endforeach; ?>
+        </select>
+
+        <select id="js-blessing-message">
+          <option disabled selected>Choose message</option>
+        </select>
+
+        <button class="js-close">Close</button>
+      </div>
+    </div>
   </div>
 </div>

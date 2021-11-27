@@ -239,6 +239,24 @@
   }
 
   /**
+   * Web components
+   */
+  const { BlessingList } = await import('./web-components/BlessingList.js');
+  customElements.define('blessing-list', BlessingList);
+
+  /**
+   * Blessing
+   */
+  const blessingContainer = document.querySelector('.blessings-container');
+  const addBlessingButton = document.getElementById('js-add-blessing');
+
+  addBlessingButton.addEventListener('click', e => {
+    e.preventDefault();
+    const blessing = document.createElement('blessing-list');
+    blessingContainer.append(blessing);
+  });
+
+  /**
    * Form submit
    */
   $('.js-options-form').on('submit', e => {
@@ -277,8 +295,14 @@
       collectAnotherPersonDeliverySettings();
     }
 
-    e.currentTarget.submit();
+    const blessingNodes = document.querySelectorAll('blessing-list');
+    if (blessingNodes) {
+      const data = [...blessingNodes].map(node => node.getBlessings());
+      console.log(data);
+      document.querySelector('[name="another_person_blessing"]').value = JSON.stringify(data);
+    }
 
+    e.currentTarget.submit();
   });
 
 }))(jQuery);

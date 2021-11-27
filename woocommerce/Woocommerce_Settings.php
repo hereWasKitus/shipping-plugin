@@ -20,6 +20,8 @@ class Woocommerce_Settings {
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
     add_action('woocommerce_after_checkout_billing_form', [$this, 'sp_deliver_to_another_pesron']);
     add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
+    // add_action( 'woocommerce_new_order', [$this, 'api_integration'], 10, 1 );
+    // add_action( 'woocommerce_thankyou', [$this, 'api_integration'], 10, 1 );
   }
 
   public function wc_scripts () {
@@ -272,6 +274,11 @@ class Woocommerce_Settings {
       'required' => $work_place['required']
     ];
 
+    $fields['billing']['billing_another_person_blessing'] = [
+      'label' => 'Blessing',
+      'placeholder' => 'Your blessing'
+    ];
+
     // If delivery to another person unselected
     if (  count( $_POST ) > 0 && !isset( $_POST['deliver_to_another_person'] ) ) {
       $fields['billing']['billing_another_person_delivery_first_name']['required'] = false;
@@ -307,6 +314,7 @@ class Woocommerce_Settings {
       echo '<p><strong>'.__('Phone 1: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</p>';
       echo '<p><strong>'.__('Phone 2: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</p>';
       echo '<p><strong>'.__('Work place: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) . '</p>';
+      echo '<p><strong>'.__('Blessing message: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) . '</p>';
     }
   }
 
@@ -321,5 +329,77 @@ class Woocommerce_Settings {
       $errors->add( 'validation', 'Minimum order amount is: ' . $minimum_price . '$' );
     }
 
+  }
+
+  public function api_integration ( $order_id ) {
+    $order = wc_get_order( $order_id );
+    $base_data = $order -> get_base_data();
+    $user = get_user_by('email', $base_data['billing']['email']);
+    $delivery_date = new DateTime( get_post_meta( $order_id, '_billing_delivery_day', true ) );
+    $from_time = $base_data['date_created'] -> date('G:i');
+    $order_items = $order -> get_items();
+
+    $request_body = [
+      'Orderid' => $order_id,
+      'OrderTitle' => $base_data['order_key'],
+      'OrderStatus' => $base_data['status'],
+      'Cust' => [
+        'custId' => $user ? $user -> ID : '',
+        'custName' => "{$base_data['billing']['first_name']} {$base_data['billing']['last_name']}",
+        'custCity' => $base_data['billing']['city'] ? $base_data['billing']['city'] : get_post_meta( $order->get_id(), '_billing_delivery_city', true ),
+        'custAddress' => $base_data['billing']['address_1'],
+        'custTel' => $base_data['billing']['phone'],
+        'custEmail' => $base_data['billing']['email']
+      ],
+      'shipment' => [
+        [
+          'collection' => !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && $base_data['billing']['country'] === 'Israel' ? 0 : 1,
+          'shipmentdate' => $delivery_date -> format('d-m-Y'),
+          'fromtime' => $from_time,
+          'totime' => get_post_meta( $order_id, '_billing_delivery_timeset', true ),
+          'company' => '',
+          'firstname' => get_post_meta( $order_id, '_billing_another_person_delivery_first_name', true ),
+          'lastname' => get_post_meta( $order_id, '_billing_another_person_delivery_last_name', true ),
+          'tel1' => get_post_meta( $order_id, '_billing_another_person_delivery_phone_1', true ),
+          'tel2' => get_post_meta( $order_id, '_billing_another_person_delivery_phone_2', true ),
+          'street' => $base_data['billing']['address_1'],
+          'number' => get_post_meta( $order->get_id(), '_billing_delivery_house', true ),
+          'entrance' => '',
+          'floor' => get_post_meta( $order->get_id(), '_billing_delivery_floor', true ),
+          'note' => $base_data['customer_note'],
+          'blessing' => '',
+        ]
+      ],
+      'OrderItems' => []
+    ];
+
+    foreach ($order_items as $item_id => $item) {
+      $product = $item -> get_product();
+      $request_body['OrderItems'][] = [
+        'ItemId' => $product -> get_ID(),
+        'ItemDesc' => $product -> get_description(),
+        'ItemQty' => $item -> get_quantity(),
+        'UnitPrice' => $product -> get_price(),
+        'discount' => '',
+      ];
+    }
+
+    $opts = array(
+      'http'=>array(
+        'method' => 'POST',
+        'header'=> "Content-type: application/x-www-form-urlencoded\r\n"
+            . "Content-Length: " . strlen(json_encode($request_body)) . "\r\n",
+        'content' => json_encode($request_body)
+      )
+    );
+
+    $context = stream_context_create($opts);
+
+    $fp = fopen('http://62.90.195.20/PostDimona.aspx?Api_key=8e60d3d7-d27c-490a-adc0-32fdfb51d3f0' . json_encode($request_body), 'w', false, $context);
+    if ( $fp !== false ) {
+      error_log(json_encode($fp));
+    } else {
+      error_log('fuck');
+    }
   }
 }
