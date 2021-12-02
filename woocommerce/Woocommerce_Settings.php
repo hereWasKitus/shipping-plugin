@@ -44,21 +44,13 @@ class Woocommerce_Settings {
 
     $new_fields['billing']['billing_state']['required'] = false;
 
+    $new_fields['billing']['billing_country']['label'] = 'Country';
+
     return $new_fields;
   }
 
   public function sp_checkout_fields ( $fields ) {
     $domain = 'sp_woocommerce';
-
-    // billing_delivery_countries
-    // $fields['billing']['billing_delivery_countries'] = [
-    //   'label'     => __('Country 1', $domain),
-    //   'required'  => true,
-    //   'clear'     => true,
-    //   'class'     => ['select2', 'sp-wc-country'],
-    //   'type'      => 'select',
-    //   'options'   => $this -> get_countries_array()
-    // ];
 
     $fields['billing']['billing_delivery_day'] = [
       'label'     => __('Day', $domain),
@@ -96,6 +88,12 @@ class Woocommerce_Settings {
 
     $fields['billing']['billing_delivery_floor'] = [
       'label'     => __('Floor', $domain),
+      'required'  => false,
+      'clear'     => true,
+    ];
+
+    $fields['billing']['billing_delivery_region'] = [
+      'label'     => __('Region', $domain),
       'required'  => false,
       'clear'     => true,
     ];
@@ -143,20 +141,6 @@ class Woocommerce_Settings {
     $template = $_template;
 
    return $template;
-  }
-
-  public function get_countries_array () {
-    $countries = json_decode( get_option('sp_international_country_upload'), true);
-    $countries_options = [
-      '' => 'Select country',
-      'Israel' => 'Israel'
-    ];
-
-    foreach ($countries as $sku => $country) {
-      $countries_options[ $country['name'] ] = "{$country['name']} +{$country['price']}";
-    }
-
-    return $countries_options;
   }
 
   public function get_cities_array () {
@@ -293,6 +277,7 @@ class Woocommerce_Settings {
 
   public function sp_display_fields_in_order ($order) {
     echo '<p><strong>'.__('Country: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_country', true ) . '</p>';
+    echo '<p><strong>'.__('Region: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_region', true ) . '</p>';
 
     if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' ) {
       echo '<p><strong>'.__('Delivery method: ').'</strong> ' . 'pickup from store' . '</p>';

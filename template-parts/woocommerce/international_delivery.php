@@ -4,6 +4,7 @@
 
   $included_fields = [
     'billing_country',
+    'billing_delivery_region',
     'billing_city',
     'billing_address_1',
     'billing_postcode',
