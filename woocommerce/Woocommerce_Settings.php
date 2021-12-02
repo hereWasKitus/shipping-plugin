@@ -4,6 +4,8 @@
  * [-] add method to receive international delivery fields
  * [-] add method to receive israel delivery fields
  */
+use GuzzleHttp\Client;
+
 class Woocommerce_Settings {
   public function __construct() {
     $this -> setup_hooks();
@@ -20,7 +22,7 @@ class Woocommerce_Settings {
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
     add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
     // add_action( 'woocommerce_new_order', [$this, 'api_integration'], 10, 1 );
-    // add_action( 'woocommerce_thankyou', [$this, 'api_integration'], 10, 1 );
+    add_action( 'woocommerce_thankyou', [$this, 'api_integration'], 10, 1 );
   }
 
   public function wc_scripts () {
@@ -321,6 +323,7 @@ class Woocommerce_Settings {
   }
 
   public function api_integration ( $order_id ) {
+    $client = new Client();
     $order = wc_get_order( $order_id );
     $base_data = $order -> get_base_data();
     $user = get_user_by('email', $base_data['billing']['email']);
@@ -373,21 +376,6 @@ class Woocommerce_Settings {
       ];
     }
 
-    $opts = array(
-      'http'=>array(
-        'method' => 'POST',
-        'header'=> "Content-type: application/x-www-form-urlencoded\r\n"
-            . "Content-Length: " . strlen(json_encode($request_body)) . "\r\n"
-      )
-    );
-
-    $context = stream_context_create($opts);
-
-    $fp = fopen('http://62.90.195.20/PostDimona.aspx?Api_key=8e60d3d7-d27c-490a-adc0-32fdfb51d3f0-Irit&Order=\'' . json_encode($request_body) . '\'', 'w', false, $context);
-    if ( $fp !== false ) {
-      error_log(json_encode($fp));
-    } else {
-      error_log('fuck');
-    }
+    $response = $client -> post('http://62.90.195.20/PostDimona.aspx?Api_key=8e60d3d7-d27c-490a-adc0-32fdfb51d3f0-Irit&Order=' . json_encode($request_body));
   }
 }
