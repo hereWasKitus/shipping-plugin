@@ -18,7 +18,6 @@ class Woocommerce_Settings {
     add_action( 'woocommerce_cart_calculate_fees', [$this, 'sp_add_cart_fee'] );
     add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'sp_display_fields_in_order'] );
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
-    add_action('woocommerce_after_checkout_billing_form', [$this, 'sp_deliver_to_another_pesron']);
     add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
     // add_action( 'woocommerce_new_order', [$this, 'api_integration'], 10, 1 );
     // add_action( 'woocommerce_thankyou', [$this, 'api_integration'], 10, 1 );
@@ -213,12 +212,6 @@ class Woocommerce_Settings {
     }
 
     return $new_countries;
-  }
-
-  public function sp_deliver_to_another_pesron () {
-    if ( get_option('another_person_delivery') ) {
-      require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/another_person_delivery.php';
-    }
   }
 
   public function sp_another_person_fields ( $fields ) {

@@ -51,6 +51,12 @@ defined( 'ABSPATH' ) || exit;
 	</p>
 	<?php endif; ?>
 
+	<?php
+	if ( get_option('another_person_delivery') ) {
+		require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/another_person_delivery.php';
+	}
+	?>
+
 	<div class="woocommerce-billing-fields__field-wrapper js-delivery-fields-container">
 		<?php require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/international_delivery.php' ?>
 	</div>
