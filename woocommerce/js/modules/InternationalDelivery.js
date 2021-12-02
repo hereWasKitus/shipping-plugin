@@ -134,6 +134,26 @@ export const InternationalDelivery = (($) => {
     if (layoutName !== 'local_pickup') {
       updateLayoutOnSelectValue();
     }
+
+    if (layoutName === 'local_pickup') {
+      document.querySelector('#billing_country_field').style.position = 'absolute';
+      document.querySelector('#billing_country_field').style.opacity = '0';
+      document.querySelector('#billing_country_field').style.zIndex = '-1';
+
+      let anotherPersonDeliveryCheckbox = document.querySelector('.sp-another-person-delivery input[type="checkbox"]');
+
+      if (anotherPersonDeliveryCheckbox) {
+        anotherPersonDeliveryCheckbox.checked = false;
+      }
+
+      $('.sp-another-person-delivery').hide();
+    } else {
+      document.querySelector('#billing_country_field').style.position = 'relative';
+      document.querySelector('#billing_country_field').style.opacity = '1';
+      document.querySelector('#billing_country_field').style.zIndex = '1';
+
+      $('.sp-another-person-delivery').show();
+    }
   }
 
   /**

@@ -1,5 +1,5 @@
 <?php
-  $checkout = WC() -> checkout;
+	$checkout = WC() -> checkout;
   $fields = $checkout->get_checkout_fields( 'billing' );
 
   $included_fields = [
