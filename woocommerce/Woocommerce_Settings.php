@@ -388,14 +388,13 @@ class Woocommerce_Settings {
       'http'=>array(
         'method' => 'POST',
         'header'=> "Content-type: application/x-www-form-urlencoded\r\n"
-            . "Content-Length: " . strlen(json_encode($request_body)) . "\r\n",
-        'content' => json_encode($request_body)
+            . "Content-Length: " . strlen(json_encode($request_body)) . "\r\n"
       )
     );
 
     $context = stream_context_create($opts);
 
-    $fp = fopen('http://62.90.195.20/PostDimona.aspx?Api_key=8e60d3d7-d27c-490a-adc0-32fdfb51d3f0' . json_encode($request_body), 'w', false, $context);
+    $fp = fopen('http://62.90.195.20/PostDimona.aspx?Api_key=8e60d3d7-d27c-490a-adc0-32fdfb51d3f0-Irit&Order=\'' . json_encode($request_body) . '\'', 'w', false, $context);
     if ( $fp !== false ) {
       error_log(json_encode($fp));
     } else {

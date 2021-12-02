@@ -250,11 +250,13 @@
   const blessingContainer = document.querySelector('.blessings-container');
   const addBlessingButton = document.getElementById('js-add-blessing');
 
-  addBlessingButton.addEventListener('click', e => {
-    e.preventDefault();
-    const blessing = document.createElement('blessing-list');
-    blessingContainer.append(blessing);
-  });
+  if (addBlessingButton) {
+    addBlessingButton.addEventListener('click', e => {
+      e.preventDefault();
+      const blessing = document.createElement('blessing-list');
+      blessingContainer.append(blessing);
+    });
+  }
 
   /**
    * Form submit
@@ -296,7 +298,8 @@
     }
 
     const blessingNodes = document.querySelectorAll('blessing-list');
-    if (blessingNodes) {
+
+    if (blessingNodes.length) {
       const data = [...blessingNodes].map(node => node.getBlessings());
       console.log(data);
       document.querySelector('[name="another_person_blessing"]').value = JSON.stringify(data);
