@@ -24,14 +24,16 @@ class Woocommerce_Settings {
   }
 
   public function wc_scripts () {
-    wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, true);
-    wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
-    wp_localize_script('sp-checkout', 'wp', [
-      'ajaxUrl' => admin_url('admin-ajax.php')
-    ]);
+    if (is_checkout()) {
+      wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, true);
+      wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
+      wp_localize_script('sp-checkout', 'wp', [
+        'ajaxUrl' => admin_url('admin-ajax.php')
+      ]);
 
-    wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
-    wp_enqueue_style('sp-main', PLUGIN_DIR . 'woocommerce/dist/main.css');
+      wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
+      wp_enqueue_style('sp-main', PLUGIN_DIR . 'woocommerce/dist/main.css');
+    }
   }
 
   public function checkout_fields ( $fields ) {

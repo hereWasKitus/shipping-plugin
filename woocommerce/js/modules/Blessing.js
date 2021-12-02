@@ -7,22 +7,31 @@ export const Blessing = ($ => {
   let _blessings = [];
 
   function _bindEvents() {
-    _button.addEventListener('click', e => {
-      e.preventDefault();
-      openPopup();
-    });
+    if (_button) {
+      _button.addEventListener('click', e => {
+        e.preventDefault();
+        openPopup();
+      });
+    }
 
-    _popup.addEventListener('click', e => {
-      const closeButton = e.target.closest('.js-close');
+    if (_popup) {
+      _popup.addEventListener('click', e => {
+        const closeButton = e.target.closest('.js-close');
 
-      if (!closeButton) return;
-      e.preventDefault();
+        if (!closeButton) return;
+        e.preventDefault();
 
-      closePopup();
-    });
+        closePopup();
+      });
+    }
 
-    _categorySelect.addEventListener('change', _handleCategoryChange);
-    _categoryMessageSelect.addEventListener('change', _handleCategoryMessageChange);
+
+    if (_categorySelect) {
+      _categorySelect.addEventListener('change', _handleCategoryChange);
+    }
+    if (_categoryMessageSelect) {
+      _categoryMessageSelect.addEventListener('change', _handleCategoryMessageChange);
+    }
   }
 
   function openPopup() {
