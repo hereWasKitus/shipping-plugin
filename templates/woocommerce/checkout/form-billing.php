@@ -46,7 +46,8 @@ defined( 'ABSPATH' ) || exit;
 
 	<?php if ( get_option('sp_pickup_delivery') ): ?>
 	<p class="form-row form-row-wide js-layout-buttons">
-		<button data-layout="international_delivery" class="is-active"><?= __('Delivery', 'woocommerce') ?></button>
+		<?php $layout = get_option('sp_israel_delivery') ? 'israel_delivery' : 'international_delivery'; ?>
+		<button data-layout="<?= $layout ?>" class="is-active"><?= __('Delivery', 'woocommerce') ?></button>
 		<button data-layout="local_pickup">Local pickup</button>
 	</p>
 	<?php endif; ?>
@@ -58,7 +59,13 @@ defined( 'ABSPATH' ) || exit;
 	?>
 
 	<div class="woocommerce-billing-fields__field-wrapper js-delivery-fields-container">
-		<?php require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/international_delivery.php' ?>
+		<?php
+		if ( get_option('sp_israel_delivery') ) {
+			require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/israel_delivery.php';
+		} else {
+			require_once PLUGIN_DIR_PATH . 'template-parts/woocommerce/international_delivery.php';
+		}
+		?>
 	</div>
 
 	<?php do_action( 'woocommerce_after_checkout_billing_form', $checkout ); ?>

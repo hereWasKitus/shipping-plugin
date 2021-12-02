@@ -8,7 +8,7 @@ export const InternationalDelivery = (($) => {
   let israelDeliveryTime = [];
   let localPickupDeliveryTime = [];
 
-  let lastSelectedCountry = '';
+  let lastSelectedCountry = 'israel';
   let currentCountry = '';
   let layoutName = 'international_delivery';
 
@@ -52,6 +52,7 @@ export const InternationalDelivery = (($) => {
 
   function updateLayoutOnSelectValue() {
     if ($(countrySelectSelector).val() === 'Israel') {
+      lastSelectedCountry = 'israel';
       switchCheckoutFields('Israel');
     } else {
       $(document.body).trigger('update_checkout');
@@ -222,13 +223,7 @@ export const InternationalDelivery = (($) => {
       const hoursFrom = dateFrom.getHours();
       const hoursTo = dateTo.getHours() === 0 ? 24 : dateTo.getHours();
 
-      optionsHTML += `<optgroup label="Slot ${index + 1}">`;
-
-      for (let index = hoursFrom; index <= hoursTo; index++) {
-        optionsHTML += `<option value="${index}:00">${index}:00</option>`;
-      }
-
-      optionsHTML += '</optgroup>'
+      optionsHTML += `<option>${hoursFrom}:00 - ${hoursTo}:00</option>`;
     });
 
     return optionsHTML;

@@ -205,6 +205,15 @@ class Woocommerce_Settings {
       ];
     }
 
+    if (
+      (isset($_POST['delivery']) && $_POST['delivery'] === 'local_pickup') ||
+      (isset($_POST['template']) && $_POST['template'] === 'local_pickup')
+    ) {
+      $new_countries = [
+        'Israel' => 'Israel'
+      ];
+    }
+
     if ( get_option('sp_international_delivery') ) {
       foreach ($international_delivery_countries as $country) {
         $new_countries[ $country['name'] ] = "{$country['name']}";
