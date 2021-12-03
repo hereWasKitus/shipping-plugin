@@ -39,6 +39,7 @@ class Shipping_Plugin {
     add_action('wp_ajax_sp_get_csv_content', [$this, 'sp_get_csv_content']);
 
     add_action('wp_ajax_get_option', [$this, 'get_option']);
+    add_action('wp_ajax_nopriv_get_option', [$this, 'get_option']);
   }
 
   function admin_scripts () {
