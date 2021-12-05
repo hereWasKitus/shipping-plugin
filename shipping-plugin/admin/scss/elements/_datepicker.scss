@@ -1,0 +1,21 @@
+.ui-datepicker {
+  &-calendar {
+    .ui-state-highlight {
+      a {
+        background: $color-primary none !important;
+      }
+    }
+  }
+
+  &-year {
+    display: none;
+  }
+
+  thead {
+    display: none;
+  }
+
+  td.ui-state-disabled {
+    pointer-events: auto;
+  }
+}
