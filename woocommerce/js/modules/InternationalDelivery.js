@@ -82,6 +82,7 @@ export const InternationalDelivery = (($) => {
 
     if (layoutName === 'international_delivery') {
       minDate = 1;
+      deliveryTime = internationalDeliveryTime;
     }
 
     if (layoutName === 'international_delivery' && currentCountry.toLowerCase() === 'israel') {
