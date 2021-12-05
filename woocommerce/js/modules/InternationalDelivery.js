@@ -59,11 +59,6 @@ export const InternationalDelivery = (($) => {
     };
   }
 
-  /**
-   *
-   * @param {String} type international | israel | pickup
-   * @returns
-   */
   async function getDeliveryTime(type = 'international') {
     const fd = new FormData();
     fd.append('action', 'get_option');
@@ -130,6 +125,7 @@ export const InternationalDelivery = (($) => {
     initDatePicker(dateInputSelector, localPickupDeliveryHolidays);
     bindEvents();
     $(countrySelectSelector).select2();
+    $(citySelectSelector).select2();
 
     $(document.body).trigger('update_checkout');
     if (layoutName !== 'local_pickup') {
@@ -236,6 +232,7 @@ export const InternationalDelivery = (($) => {
     lastSelectedCountry = country;
     $(document.body).trigger('update_checkout');
     $(countrySelectSelector).select2();
+    $(citySelectSelector).select2();
   }
 
   async function handleCityChange(city) {
@@ -260,6 +257,7 @@ export const InternationalDelivery = (($) => {
         initDatePicker(dateInputSelector, israelDeliveryHolidays);
         bindEvents();
         $(countrySelectSelector).select2();
+        $(citySelectSelector).select2();
       }
     }
 
@@ -279,6 +277,7 @@ export const InternationalDelivery = (($) => {
         initDatePicker(dateInputSelector, internationalDeliveryHolidays);
         bindEvents();
         $(countrySelectSelector).select2();
+        $(citySelectSelector).select2();
       }
     }
   }
