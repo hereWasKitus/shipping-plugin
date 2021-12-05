@@ -73,7 +73,7 @@ export const InternationalDelivery = (($) => {
 
   function initDatePicker(selector, holidays) {
     let minDate = 1;
-    let deliveryTime = internationalDeliveryTime;
+    let deliveryTime = israelDeliveryTime;
 
     if (layoutName === 'local_pickup') {
       minDate = 0;
