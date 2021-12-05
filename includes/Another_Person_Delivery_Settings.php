@@ -30,6 +30,7 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
   public function setup_settings() {
     $settings = [
       'another_person_delivery' => 'Enable delivery for another person:',
+      'another_person_delivery_enabled' => 'Checkbox checked by default on checkout page:',
       'another_person_delivery_first_name' => 'First name field settings:',
       'another_person_delivery_last_name' => 'Last name field settings:',
       'another_person_delivery_phone_1' => 'Phone number #1 field settings:',
@@ -44,6 +45,13 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
       register_setting($this -> options_group, $name);
       add_settings_field($name, $title, [$this, "{$name}_html"], $this -> options_page_name, $this -> section_id);
     }
+  }
+
+  function another_person_delivery_enabled_html () {
+    $val = get_option('another_person_delivery_enabled');
+    ?>
+    <input type="checkbox" name="another_person_delivery_enabled" id="another_person_delivery_enabled" <?= esc_attr($val) ? 'checked' : '' ?>>
+    <?php
   }
 
   function another_person_delivery_first_name_html () {

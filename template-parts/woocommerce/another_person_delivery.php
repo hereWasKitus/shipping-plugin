@@ -12,9 +12,10 @@ $included_fields = [
 ];
 
 $blessings = json_decode(get_option('another_person_blessing'), true);
+$checked = get_option('another_person_delivery_enabled');
 ?>
 <div class="sp-another-person-delivery">
-  <input type="checkbox" name="deliver_to_another_person"><span>Deliver to another person?</span>
+  <input type="checkbox" name="deliver_to_another_person" <?= esc_attr($checked) ? 'checked' : '' ?>><span>Deliver to another person?</span>
   <div>
     <?php
     foreach ( $included_fields as $field_name ) {
