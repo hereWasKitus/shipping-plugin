@@ -69,8 +69,8 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
             <?php if ( count($schedule_array) && count( $schedule_array[$day]['slots'] ) ): ?>
               <?php foreach ( $schedule_array[$day]['slots'] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
-                  <input type="time" required value="<?= $time_slot[0] ?>">
-                  <input type="time" required value="<?= $time_slot[1] ?>">
+                  <input class="js-timepicker" type="text" required value="<?= $time_slot[0] ?>">
+                  <input class="js-timepicker" type="text" required value="<?= $time_slot[1] ?>">
                   <a href="#" class="js-remove-slot">
                     <i class="gg-trash"></i>
                   </a>

@@ -22,7 +22,7 @@
       display: flex;
       align-items: center;
 
-      input[type="time"] {
+      & > input {
         width: 49%;
       }
 

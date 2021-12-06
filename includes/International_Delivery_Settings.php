@@ -19,7 +19,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
   ?>
     <h1>International Delivery</h1>
 
-    <form class="js-options-form" action="options.php" method="POST">
+    <form autocomplete="off" class="js-options-form" action="options.php" method="POST">
       <?php
       settings_fields( $this -> options_group );
       do_settings_sections( $this -> options_page_name );
@@ -88,8 +88,8 @@ class International_Delivery_Settings implements Setting_Page_Interface {
             <?php if ( count($schedule_array) && count( $schedule_array[$day]['slots'] ) ): ?>
               <?php foreach ( $schedule_array[$day]['slots'] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
-                  <input type="time" required value="<?= $time_slot[0] ?>">
-                  <input type="time" required value="<?= $time_slot[1] ?>">
+                  <input autocomplete="off" type="text" class="js-timepicker" required value="<?= $time_slot[0] ?>">
+                  <input autocomplete="off" type="text" class="js-timepicker" required value="<?= $time_slot[1] ?>">
                   <a href="#" class="js-remove-slot">
                     <i class="gg-trash"></i>
                   </a>
@@ -98,7 +98,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
-          <input value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery" type="time" style="display: block; margin: 10px auto 0;">
+          <input value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_international_delivery_time" value="<?php echo esc_attr($val) ?>" />

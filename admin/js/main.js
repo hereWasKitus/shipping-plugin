@@ -4,6 +4,13 @@
   const locationsToDelete = [];
 
   /**
+   * Timepicker
+   */
+  $('.js-timepicker').timepicker({
+    timeFormat: 'H:i'
+  });
+
+  /**
    * Datepicker
    */
   const date = new Date();
@@ -65,6 +72,9 @@
     e.preventDefault();
     const scheduleItem = createScheduleItem();
     e.currentTarget.closest('.sp-schedule-day').querySelector('.sp-schedule-day__slots').append(scheduleItem);
+    $('.js-timepicker:not(.ui-timepicker-input)').timepicker({
+      timeFormat: 'H:i'
+    });
   });
 
   $('.sp-schedule').on('click', '.js-remove-slot', e => {
@@ -77,12 +87,16 @@
     li.classList.add('sp-schedule-day__slot');
 
     let from = document.createElement('input');
-    from.type = 'time';
+    from.classList.add('js-timepicker');
+    from.type = 'text';
     from.required = true;
+    from.autocomplete = false;
 
     let to = document.createElement('input');
-    to.type = 'time';
-    from.required = true;
+    to.classList.add('js-timepicker');
+    to.type = 'text';
+    to.required = true;
+    to.autocomplete = false;
 
     let removeEl = document.createElement('a');
     removeEl.classList.add('js-remove-slot');
@@ -102,7 +116,7 @@
 
     days.forEach(dayEl => {
       let dayName = dayEl.dataset.day;
-      let inputs = dayEl.querySelectorAll('input[type="time"]:not(.next-day-delivery)');
+      let inputs = dayEl.querySelectorAll('.js-timepicker:not(.next-day-delivery)');
       schedule[dayName] = {
         slots: [],
         nextDayDelivery: dayEl.querySelector('.next-day-delivery').value

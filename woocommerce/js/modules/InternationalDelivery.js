@@ -92,11 +92,15 @@ export const InternationalDelivery = (($) => {
 
     let currentDate = new Date();
     let currentDayName = days[currentDate.getDay()];
-    let nextDayDeliveryHour = deliveryTime[currentDayName].nextDayDelivery
-      ? deliveryTime[currentDayName].nextDayDelivery.split(':')[0]
-      : 999;
 
-    minDate = currentDate.getHours() > nextDayDeliveryHour ? 1 : 0;
+    let nextDayDeliveryDate = new Date();
+
+    if (deliveryTime[currentDayName].nextDayDelivery) {
+      nextDayDeliveryDate.setHours(deliveryTime[currentDayName].nextDayDelivery.split(':')[0])
+      nextDayDeliveryDate.setMinutes(deliveryTime[currentDayName].nextDayDelivery.split(':')[1])
+    }
+
+    minDate = currentDate.getTime() > nextDayDeliveryDate.getTime() ? 1 : 0;
 
     if (layoutName === 'international_delivery' && currentCountry.toLowerCase() !== 'israel') {
       minDate = 1;
@@ -198,29 +202,10 @@ export const InternationalDelivery = (($) => {
 
     daySlots = layoutName === 'local_pickup' ? localPickupDeliveryTime[dayName].slots : daySlots;
 
-    if (daySlots) {
-      daySlots = daySlots.map(([from, to]) => {
-        let dateFrom = new Date();
-        dateFrom.setHours(from.split(':')[0]);
-        dateFrom.setMinutes(from.split(':')[1]);
-        dateFrom.setSeconds(0);
-
-        let dateTo = new Date();
-        dateTo.setHours(to.split(':')[0]);
-        dateTo.setMinutes(to.split(':')[1]);
-        dateFrom.setSeconds(0);
-
-        return [dateFrom, dateTo];
-      })
-    }
-
     let optionsHTML = '<option disabled>set time</option>';
 
     daySlots.forEach(([dateFrom, dateTo], index) => {
-      const hoursFrom = dateFrom.getHours();
-      const hoursTo = dateTo.getHours() === 0 ? 24 : dateTo.getHours();
-
-      optionsHTML += `<option>${hoursFrom}:00 - ${hoursTo}:00</option>`;
+      optionsHTML += `<option>${dateFrom} - ${dateTo}</option>`;
     });
 
     return optionsHTML;
