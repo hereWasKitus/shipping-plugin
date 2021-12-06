@@ -1,6 +1,7 @@
 (($) => $(document).ready(async () => {
 
   console.log('Shipping plugin script started');
+  const locationsToDelete = [];
 
   /**
    * Datepicker
@@ -124,12 +125,53 @@
   }
 
   /**
+   * Locations
+   */
+  if (document.querySelector('.sp-countries-container')) {
+    const countriesContainer = document.querySelector('.sp-countries-list ul');
+    const tableName = document.querySelector('.js-file-upload').dataset.table;
+
+    const fd = new FormData();
+    fd.set('action', 'sp_get_locations');
+    fd.set('table_name', tableName);
+
+    fetch(wp.ajaxUrl, {
+      method: 'POST',
+      body: fd
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.length) return;
+
+        const fragment = document.createDocumentFragment();
+
+        countriesContainer.innerHTML = '';
+
+        data.forEach(({ id, sku, name, price }) => {
+          const el = createLocationElement(id, sku, name, price);
+          fragment.append(el);
+        });
+
+        countriesContainer.append(fragment);
+      });
+  }
+
+  if (document.querySelector('.sp-countries-container')) {
+    const countriesContainer = document.querySelector('.sp-countries-list ul');
+
+    countriesContainer.addEventListener('change', e => {
+      e.target.closest('li').classList.add('changed');
+    });
+  }
+
+  /**
    * CSV
    */
   $('.js-file-upload').on('change', async ({ target }) => {
     const fd = new FormData();
     fd.append('file', target.files[0]);
     fd.append('action', 'sp_get_csv_content');
+    fd.append('table', target.dataset.table);
 
     const resp = await fetch(wp.ajaxUrl, {
       method: 'POST',
@@ -142,8 +184,8 @@
 
     countriesContainer.innerHTML = '';
 
-    data.forEach(([sku, name, price]) => {
-      const el = createLocationElement(sku, name, price);
+    data.forEach(({ id, sku, name, price }) => {
+      const el = createLocationElement(id, sku, name, price);
       fragment.append(el);
     });
 
@@ -164,11 +206,19 @@
 
   $('.sp-countries-container').on('click', '.js-remove-location', e => {
     e.preventDefault();
+    const id = e.target.closest('li').dataset.id;
+    locationsToDelete.push(id);
     e.currentTarget.parentElement.remove();
   })
 
-  function createLocationElement(sku = '', name = '', price = '') {
+  function createLocationElement(id = '', sku = '', name = '', price = '') {
     const li = document.createElement('li');
+    if (id) {
+      li.dataset.id = id;
+    } else {
+      li.classList.add('new');
+    }
+
     const skuInput = document.createElement('input');
     skuInput.required = true;
     skuInput.placeholder = 'SKU';
@@ -202,19 +252,22 @@
     return li;
   }
 
+  /**
+   *
+   * @returns {Array<{sku: String, name: string, price: Number}>} Array of
+   */
   function collectLocationValues() {
     const locations = document.querySelectorAll('.sp-countries-list li');
-    const locationValue = {};
+    const locationValue = [];
 
     if (!locations[0]?.querySelector('input')) return '';
 
     locations.forEach(li => {
-      const skuVal = li.querySelector('[name="sku"]').value;
-
-      locationValue[skuVal] = {
+      locationValue.push({
+        sku: li.querySelector('[name="sku"]').value,
         name: li.querySelector('[name="name"]').value,
         price: li.querySelector('[name="price"]').value
-      };
+      });
     });
 
     return locationValue;
@@ -261,7 +314,7 @@
   /**
    * Form submit
    */
-  $('.js-options-form').on('submit', e => {
+  $('.js-options-form').on('submit', async e => {
     e.preventDefault();
 
     // Schedule
@@ -270,16 +323,70 @@
     if (scheduleInput) {
       let scheduleValues = collectScheduleValues();
       scheduleInput.value = JSON.stringify(scheduleValues);
-      console.log(JSON.stringify(scheduleValues));
-      console.log(scheduleInput, scheduleInput.value);
     }
 
     // Locations
-    const locationInput = document.querySelector('.sp-locations-input');
+    const locationsUl = document.querySelector('.sp-countries-container ul');
 
-    if (locationInput) {
-      let locationValues = collectLocationValues();
-      locationInput.value = JSON.stringify(locationValues);
+    if (locationsUl) {
+      const changedItems = locationsUl.querySelectorAll('.changed:not(.new)');
+      const items = [...changedItems].map(li => ({
+        id: li.dataset.id,
+        sku: li.querySelector('[name="sku"]').value,
+        name: li.querySelector('[name="name"]').value,
+        price: li.querySelector('[name="price"]').value,
+      }));
+
+      if (items.length) {
+        $.ajax(wp.ajaxUrl, {
+          type: 'POST',
+          async: false,
+          data: {
+            action: 'sp_update_locations',
+            items,
+            table: document.querySelector('.js-file-upload').dataset.table
+          },
+          complete(data) {
+            console.log('completed');
+          }
+        })
+      }
+    }
+
+    if (locationsToDelete.length) {
+      $.ajax(wp.ajaxUrl, {
+        type: 'POST',
+        async: false,
+        data: {
+          action: 'sp_delete_locations',
+          items: locationsToDelete,
+          table: document.querySelector('.js-file-upload').dataset.table
+        }
+      })
+    }
+
+    if (locationsUl) {
+      const newItems = locationsUl.querySelectorAll('.new');
+      const items = [...newItems].map(li => ({
+        sku: li.querySelector('[name="sku"]').value,
+        name: li.querySelector('[name="name"]').value,
+        price: li.querySelector('[name="price"]').value,
+      }));
+
+      if (items.length) {
+        $.ajax(wp.ajaxUrl, {
+          type: 'POST',
+          async: false,
+          data: {
+            action: 'sp_insert_locations',
+            items,
+            table: document.querySelector('.js-file-upload').dataset.table
+          },
+          complete(data) {
+            console.log('completed');
+          }
+        })
+      }
     }
 
     // Datepicker

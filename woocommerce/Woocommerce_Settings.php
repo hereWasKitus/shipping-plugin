@@ -147,19 +147,24 @@ class Woocommerce_Settings {
   }
 
   public function get_cities_array () {
-    $cities = json_decode( get_option('sp_israel_city_upload'), true);
+    global $wpdb;
+    $table = $wpdb -> prefix . 'sp_delivery_cities';
+    $cities = $wpdb -> get_results("SELECT * FROM $table");
+
     $city_options = [
       '' => 'Select city'
     ];
 
     foreach ($cities as $city) {
-      $city_options[ $city['name'] ] = "{$city['name']} +{$city['price']}";
+      $city_options[ $city -> name ] = "{$city -> name} +{$city -> price}";
     }
 
     return $city_options;
   }
 
   public function sp_add_cart_fee () {
+    global $wpdb;
+
     if ( ! $_POST || ( is_admin() && ! is_ajax() ) ) {
       return;
     }
@@ -172,13 +177,18 @@ class Woocommerce_Settings {
 
     if ( isset($post_data['billing_delivery_city']) && $post_data['billing_delivery_city'] && !isset($post_data['delivery']) ) {
       $needle = $post_data['billing_delivery_city'];
-      $cities = json_decode(get_option('sp_israel_city_upload'), true);
-      $city = array_values(array_filter( array_values($cities), function ($item) use ($needle) {
-        return $item['name'] === $needle;
-      } ));
 
-      if ( $city && $city[0]['price'] ) {
-        WC()->cart->add_fee( __('Shipping to city', 'woocommerce'), $city[0]['price'] );
+      $table = $wpdb -> prefix . 'sp_delivery_cities';
+      $cities = $wpdb -> get_results("SELECT * FROM $table");
+
+      $city = array_values(array_filter($cities, function ($item) use ($needle) {
+        return $item -> name === $needle;
+      }));
+
+      error_log(json_encode($city));
+
+      if ( $city && $city[0] -> price ) {
+        WC()->cart->add_fee( __('Shipping to city', 'woocommerce'), $city[0] -> price );
       }
 
       return;
@@ -186,13 +196,16 @@ class Woocommerce_Settings {
 
     if ( isset($post_data['billing_country']) && $post_data['billing_country'] && !isset($post_data['delivery']) ) {
       $needle = $post_data['billing_country'];
-      $countries = json_decode(get_option('sp_international_country_upload'), true);
-      $country = array_values(array_filter( array_values($countries), function ($item) use ($needle) {
-        return $item['name'] === $needle;
+
+      $table = $wpdb -> prefix . 'sp_delivery_countries';
+      $countries = $wpdb -> get_results("SELECT * FROM $table");
+
+      $country = array_values(array_filter( $countries, function ($item) use ($needle) {
+        return $item -> name === $needle;
       } ));
 
-      if ( $country && $country[0]['price'] ) {
-        WC()->cart->add_fee( __('Shipping to country', 'woocommerce'), $country[0]['price'] );
+      if ( $country && $country[0] -> price ) {
+        WC()->cart->add_fee( __('Shipping to country', 'woocommerce'), $country[0] -> price );
       }
 
       return;
@@ -200,7 +213,9 @@ class Woocommerce_Settings {
   }
 
   public function sp_woo_countries( $countries ) {
-    $international_delivery_countries = json_decode(get_option('sp_international_country_upload'), true);
+    global $wpdb;
+    $table = $wpdb -> prefix . 'sp_delivery_countries';
+    $international_delivery_countries = $wpdb -> get_results("SELECT * FROM $table");
     $new_countries = [];
 
     if ( get_option('sp_israel_delivery') ) {
@@ -220,7 +235,7 @@ class Woocommerce_Settings {
 
     if ( get_option('sp_international_delivery') ) {
       foreach ($international_delivery_countries as $country) {
-        $new_countries[ $country['name'] ] = "{$country['name']}";
+        $new_countries[ $country -> name ] = "{$country -> name}";
       }
     }
 

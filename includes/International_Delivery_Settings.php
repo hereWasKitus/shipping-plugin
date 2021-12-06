@@ -133,7 +133,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
     $val = get_option('sp_international_country_upload');
     $locations = json_decode($val, true);
   ?>
-    <input type="file" class="js-file-upload" class="js-file-upload">
+    <input type="file" class="js-file-upload" class="js-file-upload" data-table="sp_delivery_countries">
 
     <div class="sp-countries-container">
       <div class="sp-countries-list">
@@ -144,9 +144,9 @@ class International_Delivery_Settings implements Setting_Page_Interface {
             No fields yet
           </li>
         <?php else: ?>
-          <?php foreach ( $locations as $sku => $data ): ?>
-          <li>
-            <input name="sku" placeholder="SKU" type="text" value="<?= $sku ?>">
+          <?php foreach ( $locations as $data ): ?>
+          <li data-id="<?= $data['id'] ?>">
+            <input name="sku" placeholder="SKU" type="text" value="<?= $data['sku'] ?>">
             <input name="name" placeholder="Name" type="text" value="<?= $data['name'] ?>">
             <input name="price" placeholder="Price" type="number" value="<?= $data['price'] ?>">
             <a href="#" class="js-remove-location"><i class="gg-trash"></i></a>
@@ -155,7 +155,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
         <?php endif; ?>
         </ul>
         <button class="button button-primary js-add-location">Add</button>
-        <input type="hidden" name="sp_international_country_upload" class="sp-locations-input" value="<?php echo esc_attr($val) ?>">
+        <input type="hidden" name="sp_international_country_upload" class="sp-locations-input" value="">
       </div>
     </div>
 

@@ -9,7 +9,7 @@ export const InternationalDelivery = (($) => {
   let localPickupDeliveryTime = [];
 
   let lastSelectedCountry = 'israel';
-  let currentCountry = '';
+  let currentCountry = 'israel';
   let layoutName = 'international_delivery';
 
   let internationalDeliveryHolidays = [];
@@ -98,7 +98,7 @@ export const InternationalDelivery = (($) => {
 
     minDate = currentDate.getHours() > nextDayDeliveryHour ? 1 : 0;
 
-    if (layoutName === 'international_delivery' && currentCountry !== 'Israel') {
+    if (layoutName === 'international_delivery' && currentCountry.toLowerCase() !== 'israel') {
       minDate = 1;
     }
 

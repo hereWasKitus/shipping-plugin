@@ -37,6 +37,10 @@ class Shipping_Plugin {
 
   function setup_ajax () {
     add_action('wp_ajax_sp_get_csv_content', [$this, 'sp_get_csv_content']);
+    add_action('wp_ajax_sp_get_locations', [$this, 'sp_get_locations']);
+    add_action('wp_ajax_sp_update_locations', [$this, 'sp_update_locations']);
+    add_action('wp_ajax_sp_delete_locations', [$this, 'sp_delete_locations']);
+    add_action('wp_ajax_sp_insert_locations', [$this, 'sp_insert_locations']);
 
     add_action('wp_ajax_get_option', [$this, 'get_option']);
     add_action('wp_ajax_nopriv_get_option', [$this, 'get_option']);
@@ -70,8 +74,10 @@ class Shipping_Plugin {
   }
 
   function sp_get_csv_content () {
+    global $wpdb;
     $stream = fopen( $_FILES['file']['tmp_name'], 'r' );
     $res = [];
+    $prefix = $wpdb -> prefix;
 
     if ($stream !== FALSE) {
       while (($data = fgetcsv($stream, 1000, ",")) !== FALSE) {
@@ -80,8 +86,80 @@ class Shipping_Plugin {
       fclose($stream);
     }
 
-    echo wp_json_encode( $res );
+    $wpdb -> query("TRUNCATE TABLE {$prefix}{$_POST['table']}");
+
+    foreach ($res as $data) {
+      $wpdb->insert(
+        $prefix . $_POST['table'],
+        array(
+          'name' => $data[1],
+          'sku' => $data[0],
+          'price' => $data[2],
+        )
+      );
+    }
+
+    $locations = $wpdb -> get_results("SELECT * FROM {$prefix}{$_POST['table']}");
+
+    echo wp_json_encode( $locations );
     wp_die();
+  }
+
+  function sp_get_locations () {
+    global $wpdb;
+    $table = $wpdb -> prefix . $_POST['table_name'];
+    $locations = $wpdb -> get_results("SELECT * FROM $table");
+    wp_send_json( $locations );
+  }
+
+  function sp_update_locations () {
+    global $wpdb;
+    $locations = $_POST['items'];
+
+    foreach ( $locations as $location ) {
+      $wpdb -> update(
+        $wpdb -> prefix . $_POST['table'],
+        [
+          'sku' => $location['sku'],
+          'name' => $location['name'],
+          'price' => $location['price'],
+        ],
+        [
+          'id' => $location['id']
+        ]
+      );
+    }
+
+    wp_send_json( ['success' => true] );
+  }
+
+  function sp_delete_locations () {
+    global $wpdb;
+    $ids = $_POST['items'];
+
+    foreach ($ids as $id) {
+      $wpdb -> delete($wpdb -> prefix . $_POST['table'], ['id' => $id]);
+    }
+
+    wp_send_json( ['success' => true] );
+  }
+
+  function sp_insert_locations () {
+    global $wpdb;
+    $locations = $_POST['items'];
+
+    foreach ( $locations as $location ) {
+      $wpdb -> insert(
+        $wpdb -> prefix . $_POST['table'],
+        [
+          'sku' => $location['sku'],
+          'name' => $location['name'],
+          'price' => $location['price'],
+        ]
+      );
+    }
+
+    wp_send_json( ['success' => true] );
   }
 
   function get_option () {
