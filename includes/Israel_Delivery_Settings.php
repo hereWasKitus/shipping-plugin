@@ -91,8 +91,8 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
             <?php if ( count($schedule_array) && count( $schedule_array[$day]['slots'] ) ): ?>
               <?php foreach ( $schedule_array[$day]['slots'] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
-                  <input autocomplete="off" class="js-timepicker" type="text" required value="<?= $time_slot[0] ?>">
-                  <input autocomplete="off" class="js-timepicker" type="text" required value="<?= $time_slot[1] ?>">
+                  <input autocomplete="new-password" class="js-timepicker" type="text" required value="<?= $time_slot[0] ?>">
+                  <input autocomplete="new-password" class="js-timepicker" type="text" required value="<?= $time_slot[1] ?>">
                   <a href="#" class="js-remove-slot">
                     <i class="gg-trash"></i>
                   </a>
@@ -101,7 +101,7 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
-          <input autocomplete="off" value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
+          <input autocomplete="new-password" value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_israel_delivery_time" value="<?php echo esc_attr($val) ?>" />
