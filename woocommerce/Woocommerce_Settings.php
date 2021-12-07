@@ -21,6 +21,7 @@ class Woocommerce_Settings {
     add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'sp_display_fields_in_order'] );
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
     add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
+    add_filter('woocommerce_email_order_meta_fields', [$this, 'my_custom_order_meta_keys'], 10, 3);
   }
 
   public function wc_scripts () {
@@ -333,5 +334,93 @@ class Woocommerce_Settings {
       $errors->add( 'validation', 'Minimum order amount is: ' . $minimum_price . '$' );
     }
 
+  }
+
+  function my_custom_order_meta_keys ($fields, $sent_to_admin, $order) {
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
+      $fields['_billing_delivery_region'] = [
+        'label' => 'Delivery region',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_region', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
+      $fields['_billing_delivery_city'] = [
+        'label' => 'Delivery city',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_city', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_house', true ) ) {
+      $fields['_billing_delivery_house'] = [
+        'label' => 'Delivery house',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_house', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) ) {
+      $fields['_billing_delivery_floor'] = [
+        'label' => 'Floor',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_floor', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_day', true ) ) {
+      $fields['_billing_delivery_day'] = [
+        'label' => 'Delivery day',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_day', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) ) {
+      $fields['_billing_delivery_timeset'] = [
+        'label' => 'Delivery time',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_timeset', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
+      $fields['_billing_another_person_delivery_first_name'] = [
+        'label' => 'Recipient first name',
+        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true ) ) {
+      $fields['_billing_another_person_delivery_last_name'] = [
+        'label' => 'Recipient last name',
+        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) ) {
+      $fields['_billing_another_person_delivery_phone_1'] = [
+        'label' => 'Recipient phone 1',
+        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) ) {
+      $fields['_billing_another_person_delivery_phone_2'] = [
+        'label' => 'Recipient phone 2',
+        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) ) {
+      $fields['_billing_another_person_delivery_work_place'] = [
+        'label' => 'Recipient work place',
+        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) ) {
+      $fields['_billing_another_person_blessing'] = [
+        'label' => 'Recipient blessing',
+        'value' => get_post_meta( $order->get_id(), '_billing_another_person_blessing', true )
+      ];
+    }
+
+    return $fields;
   }
 }

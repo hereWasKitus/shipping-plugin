@@ -90,13 +90,13 @@
     from.classList.add('js-timepicker');
     from.type = 'text';
     from.required = true;
-    from.autocomplete = false;
+    from.autocomplete = "new-password";
 
     let to = document.createElement('input');
     to.classList.add('js-timepicker');
     to.type = 'text';
     to.required = true;
-    to.autocomplete = false;
+    to.autocomplete = "new-password";
 
     let removeEl = document.createElement('a');
     removeEl.classList.add('js-remove-slot');
