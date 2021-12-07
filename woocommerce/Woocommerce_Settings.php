@@ -4,7 +4,6 @@
  * [-] add method to receive international delivery fields
  * [-] add method to receive israel delivery fields
  */
-use GuzzleHttp\Client;
 
 class Woocommerce_Settings {
   public function __construct() {

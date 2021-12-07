@@ -23,7 +23,6 @@
  * [-] Add default values for fields to prevent errors from javascript side
  */
 
-require 'vendor/autoload.php';
 require_once __DIR__ . '/includes/Shipping_Plugin.php';
 require_once __DIR__ . '/woocommerce/Woocommerce_Settings.php';
 require_once __DIR__ . '/includes/Ajax_Handler.php';
