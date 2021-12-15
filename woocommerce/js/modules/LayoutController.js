@@ -17,7 +17,7 @@ export const LayoutController = ($ => {
     body.append('action', 'sp_layout_change');
     body.append('template', templateName);
 
-    const resp = await fetch(wp.ajaxUrl, {
+    const resp = await fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body
     });

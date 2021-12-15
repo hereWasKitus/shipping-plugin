@@ -48,7 +48,7 @@ export const Blessing = ($ => {
       body.append('action', 'get_option');
       body.append('name', 'another_person_blessing');
 
-      const resp = await fetch(wp.ajaxUrl, {
+      const resp = await fetch(wpdata.ajaxUrl, {
         method: 'POST',
         body
       });

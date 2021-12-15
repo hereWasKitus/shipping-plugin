@@ -41,7 +41,7 @@ export const InternationalDelivery = (($) => {
     body.append('action', 'get_option');
     body.append('name', 'sp_international_tooltip');
 
-    const resp = await fetch(wp.ajaxUrl, {
+    const resp = await fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body
     });
@@ -63,7 +63,7 @@ export const InternationalDelivery = (($) => {
     const fd = new FormData();
     fd.append('action', 'get_option');
     fd.append('name', `sp_${type}_delivery_time`);
-    const resp = await fetch(wp.ajaxUrl, {
+    const resp = await fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body: fd
     });
@@ -169,7 +169,7 @@ export const InternationalDelivery = (($) => {
 
     fd.append('name', `sp_${type}_public_holidays`);
 
-    let res = await fetch(wp.ajaxUrl, {
+    let res = await fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body: fd
     });
@@ -232,7 +232,7 @@ export const InternationalDelivery = (($) => {
       fd.set('action', 'sp_layout_change');
       fd.set('template', 'israel_delivery');
 
-      const resp = await fetch(wp.ajaxUrl, {
+      const resp = await fetch(wpdata.ajaxUrl, {
         method: 'POST',
         body: fd
       });
@@ -252,7 +252,7 @@ export const InternationalDelivery = (($) => {
       fd.set('template', 'international_delivery');
       fd.set('country', country);
 
-      const resp = await fetch(wp.ajaxUrl, {
+      const resp = await fetch(wpdata.ajaxUrl, {
         method: 'POST',
         body: fd
       });

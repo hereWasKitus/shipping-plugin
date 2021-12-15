@@ -24,7 +24,7 @@
   datesFd.append('name', dateOptionName);
 
   try {
-    const selectedDatesResponse = await fetch(wp.ajaxUrl, {
+    const selectedDatesResponse = await fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body: datesFd
     });
@@ -149,7 +149,7 @@
     fd.set('action', 'sp_get_locations');
     fd.set('table_name', tableName);
 
-    fetch(wp.ajaxUrl, {
+    fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body: fd
     })
@@ -187,7 +187,7 @@
     fd.append('action', 'sp_get_csv_content');
     fd.append('table', target.dataset.table);
 
-    const resp = await fetch(wp.ajaxUrl, {
+    const resp = await fetch(wpdata.ajaxUrl, {
       method: 'POST',
       body: fd
     });
@@ -352,7 +352,7 @@
       }));
 
       if (items.length) {
-        $.ajax(wp.ajaxUrl, {
+        $.ajax(wpdata.ajaxUrl, {
           type: 'POST',
           async: false,
           data: {
@@ -368,7 +368,7 @@
     }
 
     if (locationsToDelete.length) {
-      $.ajax(wp.ajaxUrl, {
+      $.ajax(wpdata.ajaxUrl, {
         type: 'POST',
         async: false,
         data: {
@@ -388,7 +388,7 @@
       }));
 
       if (items.length) {
-        $.ajax(wp.ajaxUrl, {
+        $.ajax(wpdata.ajaxUrl, {
           type: 'POST',
           async: false,
           data: {

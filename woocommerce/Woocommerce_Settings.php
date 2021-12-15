@@ -27,7 +27,7 @@ class Woocommerce_Settings {
     if (is_checkout()) {
       wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, true);
       wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
-      wp_localize_script('sp-checkout', 'wp', [
+      wp_localize_script('sp-checkout', 'wpdata', [
         'ajaxUrl' => admin_url('admin-ajax.php')
       ]);
 

@@ -51,7 +51,7 @@ class Shipping_Plugin {
     wp_enqueue_script('jquery-ui-multi-datepicker', PLUGIN_DIR . 'libs/jquery-ui-multi-datepicker/jquery-ui.multidatespicker.js', ['jquery-ui'], null, false);
     wp_enqueue_script('jquery-timepicker', PLUGIN_DIR . 'libs/jquery-timepicker/jquery.timepicker.min.js', ['jquery'], null, false);
     wp_enqueue_script('main', PLUGIN_DIR . 'admin/js/main.js', [], null, false);
-    wp_localize_script('main', 'wp', [
+    wp_localize_script('main', 'wpdata', [
       'ajaxUrl' => admin_url('admin-ajax.php')
     ]);
 
