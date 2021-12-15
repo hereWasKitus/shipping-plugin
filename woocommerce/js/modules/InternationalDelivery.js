@@ -108,6 +108,7 @@ export const InternationalDelivery = (($) => {
 
     $(selector).datepicker({
       // minDate: lastSelectedCountry.toLowerCase() !== 'israel' ? 1 : 0,
+      dateFormat: 'dd/mm/y',
       minDate,
       beforeShowDay(date) {
         let string = jQuery.datepicker.formatDate('mm/dd/yy', date);
@@ -174,7 +175,6 @@ export const InternationalDelivery = (($) => {
       body: fd
     });
 
-    // error if no holiday - need to fix
     let internationalDeliveryHolidays = await res.json();
 
     return internationalDeliveryHolidays.map(dateString => {
@@ -190,11 +190,12 @@ export const InternationalDelivery = (($) => {
 
   /**
    *
-   * @param {String} dateString Date string in format mm/dd/yy
+   * @param {String} dateString Date string in format dd/mm/yyyy
    * @returns {NodeList} Options HTML list
    */
   function getTimeOptionsHTML(dateString) {
-    const dayName = days[new Date(dateString).getDay()];
+    let dateArray = dateString.split('/');
+    const dayName = days[new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`).getDay()];
     // add condition to use israel delivery time
     let daySlots = lastSelectedCountry.toLowerCase() === 'israel'
       ? israelDeliveryTime[dayName].slots
