@@ -91,12 +91,14 @@
     from.type = 'text';
     from.required = true;
     from.autocomplete = "new-password";
+    from.placeholder = 'From';
 
     let to = document.createElement('input');
     to.classList.add('js-timepicker');
     to.type = 'text';
     to.required = true;
     to.autocomplete = "new-password";
+    to.placeholder = "To";
 
     let removeEl = document.createElement('a');
     removeEl.classList.add('js-remove-slot');

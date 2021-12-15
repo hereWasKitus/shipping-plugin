@@ -88,8 +88,8 @@ class International_Delivery_Settings implements Setting_Page_Interface {
             <?php if ( count($schedule_array) && count( $schedule_array[$day]['slots'] ) ): ?>
               <?php foreach ( $schedule_array[$day]['slots'] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
-                  <input autocomplete="new-password" type="text" class="js-timepicker" required value="<?= $time_slot[0] ?>">
-                  <input autocomplete="new-password" type="text" class="js-timepicker" required value="<?= $time_slot[1] ?>">
+                  <input placeholder="From" autocomplete="new-password" type="text" class="js-timepicker" required value="<?= $time_slot[0] ?>">
+                  <input placeholder="To" autocomplete="new-password" type="text" class="js-timepicker" required value="<?= $time_slot[1] ?>">
                   <a href="#" class="js-remove-slot">
                     <i class="gg-trash"></i>
                   </a>
