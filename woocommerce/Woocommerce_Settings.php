@@ -87,6 +87,12 @@ class Woocommerce_Settings {
       'clear'     => true,
     ];
 
+    $fields['billing']['billing_delivery_apartment'] = [
+      'label'     => __('Apartment number', $domain),
+      'required'  => false,
+      'clear'     => true,
+    ];
+
     $fields['billing']['billing_delivery_floor'] = [
       'label'     => __('Floor', $domain),
       'required'  => false,
@@ -306,6 +312,7 @@ class Woocommerce_Settings {
     if ( get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' && get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
       echo '<p><strong>'.__('City: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_city', true ) . '</p>';
       echo '<p><strong>'.__('House: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_house', true ) . '</p>';
+      echo '<p><strong>'.__('Apartment: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) . '</p>';
       echo '<p><strong>'.__('Floor: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</p>';
     }
 
@@ -358,6 +365,13 @@ class Woocommerce_Settings {
       $fields['_billing_delivery_house'] = [
         'label' => 'Delivery house',
         'value' => get_post_meta( $order->get_id(), '_billing_delivery_house', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) ) {
+      $fields['_billing_delivery_apartment'] = [
+        'label' => 'Delivery apartment number',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_apartment', true )
       ];
     }
 
