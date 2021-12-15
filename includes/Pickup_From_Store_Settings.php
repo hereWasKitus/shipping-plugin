@@ -32,7 +32,8 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
     $settings = [
       'sp_pickup_delivery' => 'Enable pickup from store:',
       'sp_pickup_delivery_time' => 'Available pickup hours:',
-      'sp_pickup_public_holidays' => 'Holidays:'
+      'sp_pickup_public_holidays' => 'Holidays:',
+      'sp_pickup_show_person_blessing' => 'Show blessing on local pickup:'
     ];
 
     add_settings_section($this -> section_id, '', '', $this -> options_page_name);
@@ -96,6 +97,13 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
       <div id="sp-public-holidays"></div>
       <input class="sp-dates-input" type="hidden" name="sp_pickup_public_holidays" value="<?php echo esc_attr($val) ?>">
     </div>
+    <?php
+  }
+
+  function sp_pickup_show_person_blessing_html () {
+    $val = get_option('sp_pickup_show_person_blessing');
+    ?>
+    <input type="checkbox" name="sp_pickup_show_person_blessing" <?= esc_attr($val) ? 'checked' : '' ?>>
     <?php
   }
 }

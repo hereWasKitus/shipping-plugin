@@ -30,7 +30,6 @@ $checked = get_option('another_person_delivery_enabled');
 
     <?php if ( count($blessings) ): ?>
     <button class="button button-primary" id="js-choose-blessing">Choose blessing</button>
-    <?php endif; ?>
 
     <div class="blessing-popup" id="blessing-popup">
       <div class="blessing-block" id="blessing-popup">
@@ -49,5 +48,6 @@ $checked = get_option('another_person_delivery_enabled');
         <button class="js-close">Close</button>
       </div>
     </div>
+    <?php endif; ?>
   </div>
 </div>

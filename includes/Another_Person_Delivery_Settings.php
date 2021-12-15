@@ -173,7 +173,7 @@ class Another_Person_Delivery_Settings implements Setting_Page_Interface {
         ?>
       </div>
 
-      <input type="hidden" name="another_person_blessing" value="<?= esc_attr($val) ?>">
+      <input class="js-blessing-field" type="hidden" name="another_person_blessing" value="<?= esc_attr($val) ?>">
     </div>
     <?php
   }

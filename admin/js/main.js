@@ -424,8 +424,7 @@
 
     if (blessingNodes.length) {
       const data = [...blessingNodes].map(node => node.getBlessings());
-      console.log(data);
-      document.querySelector('[name="another_person_blessing"]').value = JSON.stringify(data);
+      document.querySelector('.js-blessing-field').value = JSON.stringify(data);
     }
 
     e.currentTarget.submit();

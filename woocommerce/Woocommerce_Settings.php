@@ -318,6 +318,9 @@ class Woocommerce_Settings {
       echo '<p><strong>'.__('Phone 1: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</p>';
       echo '<p><strong>'.__('Phone 2: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</p>';
       echo '<p><strong>'.__('Work place: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) . '</p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) ) {
       echo '<p><strong>'.__('Blessing message: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) . '</p>';
     }
   }
