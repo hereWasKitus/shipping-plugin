@@ -1,6 +1,6 @@
 export const Blessing = ($ => {
   const _button = document.getElementById('js-choose-blessing');
-  const _field = document.querySelector('input[name="billing_another_person_blessing"]');
+  const _field = document.querySelector('[name="billing_another_person_blessing"]');
   const _popup = document.getElementById('blessing-popup');
   const _categorySelect = document.getElementById('js-blessing-category');
   const _categoryMessageSelect = document.getElementById('js-blessing-message');
@@ -99,7 +99,7 @@ export const Blessing = ($ => {
       _bindEvents();
 
       $(document.body).on('sp_layout_change_finished', (e, data) => {
-        $('input[name="billing_another_person_blessing"]').val('');
+        $('[name="billing_another_person_blessing"]').val('');
 
         // .js-pickup-blessing
         $('.js-pickup-blessing #js-choose-blessing').on('click', e => {
@@ -160,7 +160,7 @@ export const Blessing = ($ => {
         });
 
         $('.js-pickup-blessing #js-blessing-message').on('change', e => {
-          $('input[name="billing_another_person_blessing"]').val(e.target.value);
+          $('[name="billing_another_person_blessing"]').val(e.target.value);
           $('.js-pickup-blessing #blessing-popup').removeClass('is-active');
         });
 

@@ -279,7 +279,8 @@ class Woocommerce_Settings {
 
     $fields['billing']['billing_another_person_blessing'] = [
       'label' => 'Blessing',
-      'placeholder' => 'Your blessing'
+      'placeholder' => 'Your blessing',
+      'type' => 'textarea'
     ];
 
     // If delivery to another person unselected

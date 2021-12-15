@@ -74,6 +74,16 @@ export class BlessingList extends HTMLElement {
         padding-left: 0;
       }
 
+      .blessing-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .blessing-item textarea {
+        min-height: 75px;
+      }
+
       .blessing-items .blessing-item:not(:last-child) {
         margin-bottom: 10px;
       }
@@ -115,8 +125,7 @@ export class BlessingList extends HTMLElement {
     const listItemEl = document.createElement('li');
     listItemEl.classList.add('blessing-item');
 
-    const listItemInputEl = document.createElement('input');
-    listItemInputEl.type = 'text';
+    const listItemInputEl = document.createElement('textarea');
     listItemInputEl.placeholder = 'Enter your message';
     listItemInputEl.value = text;
 
@@ -129,7 +138,7 @@ export class BlessingList extends HTMLElement {
   }
 
   getBlessings() {
-    const blessingItems = this.shadowRoot.querySelectorAll('.blessing-items input');
+    const blessingItems = this.shadowRoot.querySelectorAll('.blessing-items textarea');
 
     return {
       categoryName: this.shadowRoot.querySelector('.blessing-category input').value,
