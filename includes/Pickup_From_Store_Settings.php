@@ -70,8 +70,8 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
             <?php if ( count($schedule_array) && count( $schedule_array[$day]['slots'] ) ): ?>
               <?php foreach ( $schedule_array[$day]['slots'] as $time_slot ): ?>
                 <li class="sp-schedule-day__slot">
-                  <input placeholder="From" autocomplete="new-password" class="js-timepicker" type="text" required value="<?= $time_slot[0] ?>">
-                  <input placeholder="To" autocomplete="new-password" class="js-timepicker" type="text" required value="<?= $time_slot[1] ?>">
+                  <input placeholder="From" autocomplete="new-password" class="js-timepicker js-timepicker-60" type="text" required value="<?= $time_slot[0] ?>">
+                  <input placeholder="To" autocomplete="new-password" class="js-timepicker js-timepicker-60" type="text" required value="<?= $time_slot[1] ?>">
                   <a href="#" class="js-remove-slot">
                     <i class="gg-trash"></i>
                   </a>
@@ -79,7 +79,7 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
               <?php endforeach; ?>
             <?php endif; ?>
           </ul>
-          <button class="button button-primary js-add-schedule">Add +</button>
+          <button class="button button-primary js-add-schedule" data-interval="60">Add +</button>
           <input value="" class="next-day-delivery" type="hidden">
         </div>
       <?php endforeach; ?>

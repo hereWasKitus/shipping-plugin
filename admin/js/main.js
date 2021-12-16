@@ -6,8 +6,12 @@
   /**
    * Timepicker
    */
-  $('.js-timepicker').timepicker({
-    timeFormat: 'H:i'
+  $('.js-timepicker:not(.js-timepicker-60)').timepicker({
+    timeFormat: 'H:i',
+  });
+  $('.js-timepicker-60').timepicker({
+    timeFormat: 'H:i',
+    step: 60
   });
 
   /**
@@ -71,9 +75,11 @@
   $('.js-add-schedule').on('click', e => {
     e.preventDefault();
     const scheduleItem = createScheduleItem();
+    const step = +e.currentTarget.dataset.interval || 30;
     e.currentTarget.closest('.sp-schedule-day').querySelector('.sp-schedule-day__slots').append(scheduleItem);
     $('.js-timepicker:not(.ui-timepicker-input)').timepicker({
-      timeFormat: 'H:i'
+      timeFormat: 'H:i',
+      step
     });
   });
 
