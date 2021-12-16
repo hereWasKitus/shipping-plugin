@@ -42,6 +42,7 @@ class Woocommerce_Settings {
     $new_fields['billing']['billing_email']['class'] = ['form-row-first'];
 
     $new_fields['billing']['billing_phone']['class'] = ['form-row-last'];
+    $new_fields['billing']['billing_phone']['type'] = 'number';
 
     $new_fields['billing']['billing_state']['required'] = false;
 
@@ -91,12 +92,14 @@ class Woocommerce_Settings {
       'label'     => __('Apartment number', $domain),
       'required'  => false,
       'clear'     => true,
+      'type'      => 'number'
     ];
 
     $fields['billing']['billing_delivery_floor'] = [
       'label'     => __('Floor', $domain),
       'required'  => false,
       'clear'     => true,
+      'type'      => 'number'
     ];
 
     $fields['billing']['billing_delivery_region'] = [
@@ -268,13 +271,15 @@ class Woocommerce_Settings {
     $fields['billing']['billing_another_person_delivery_phone_1'] = [
       'label' => $phone_1['label'],
       'placeholder' => $phone_1['placeholder'],
-      'required' => $phone_1['required']
+      'required' => $phone_1['required'],
+      'type'      => 'number'
     ];
 
     $fields['billing']['billing_another_person_delivery_phone_2'] = [
       'label' => $phone_2['label'],
       'placeholder' => $phone_2['placeholder'],
-      'required' => $phone_2['required']
+      'required' => $phone_2['required'],
+      'type'      => 'number'
     ];
 
     $fields['billing']['billing_another_person_work_place'] = [
