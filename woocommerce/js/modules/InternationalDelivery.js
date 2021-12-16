@@ -130,7 +130,6 @@ export const InternationalDelivery = (($) => {
     }
 
     $(selector).datepicker({
-      // minDate: lastSelectedCountry.toLowerCase() !== 'israel' ? 1 : 0,
       dateFormat: 'dd/mm/y',
       minDate,
       beforeShowDay(date) {
@@ -139,7 +138,17 @@ export const InternationalDelivery = (($) => {
           ? tooltipText
           : '';
 
-        return [holidays.indexOf(string) === -1, "", tooltip];
+        let days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        let currentDayName = days[date.getDay()];
+        let filledDays = [];
+
+        for (const key in deliveryTime) {
+          if ( deliveryTime[key].slots.length ) filledDays.push(key);
+        }
+
+        let toShowDay = (holidays.indexOf(string) === -1) && (filledDays.indexOf(currentDayName) >= 0);
+
+        return [toShowDay, "", tooltip];
       }
     });
   }
