@@ -114,11 +114,9 @@ class Woocommerce_Settings {
 
     if ( isset($_POST['billing_country']) && $_POST['billing_country'] == 'Israel' ) {
       $fields['billing']['billing_city']['required'] = false;
-      $fields['billing']['billing_postcode']['required'] = false;
     }
 
     if ( isset($_POST['delivery']) && $_POST['delivery'] == 'local_pickup' ) {
-      $fields['billing']['billing_postcode']['required'] = false;
       $fields['billing']['billing_address_1']['required'] = false;
       $fields['billing']['billing_city']['required'] = false;
       $fields['billing']['billing_delivery_city']['required'] = false;
@@ -191,8 +189,6 @@ class Woocommerce_Settings {
       $city = array_values(array_filter($cities, function ($item) use ($needle) {
         return $item -> name === $needle;
       }));
-
-      error_log(json_encode($city));
 
       if ( $city && $city[0] -> price ) {
         WC()->cart->add_fee( __('Shipping to city', 'woocommerce'), $city[0] -> price );
@@ -307,34 +303,41 @@ class Woocommerce_Settings {
   }
 
   public function sp_display_fields_in_order ($order) {
-    echo '<p><strong>'.__('Country: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_country', true ) . '</p>';
-    echo '<p><strong>'.__('Region: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_region', true ) . '</p>';
+    echo '<p><strong>'.__('Country: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_country', true ) . '</span></p>';
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
+      echo '<p><strong>'.__('Region: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_region', true ) . '</span></p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_address_1', true ) ) {
+      echo '<p><strong>'.__('Street: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_address_1', true ) . '</span></p>';
+    }
 
     if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' ) {
-      echo '<p><strong>'.__('Delivery method: ').'</strong> ' . 'pickup from store' . '</p>';
+      echo '<p><strong>'.__('Delivery method: ')."</strong> </br> <span>" . 'pickup from store' . '</span></p>';
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' && get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
-      echo '<p><strong>'.__('City: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_city', true ) . '</p>';
-      echo '<p><strong>'.__('House: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_house', true ) . '</p>';
-      echo '<p><strong>'.__('Apartment: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) . '</p>';
-      echo '<p><strong>'.__('Floor: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</p>';
+      echo '<p><strong>'.__('City: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_city', true ) . '</span></p>';
+      echo '<p><strong>'.__('House: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_house', true ) . '</span></p>';
+      echo '<p><strong>'.__('Apartment: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) . '</span></p>';
+      echo '<p><strong>'.__('Floor: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</span></p>';
     }
 
-    echo '<p><strong>'.__('Delivery day: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</p>';
-    echo '<p><strong>'.__('Delivery time: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</p>';
+    echo '<p><strong>'.__('Delivery day: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</span></p>';
+    echo '<p><strong>'.__('Delivery time: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</span></p>';
 
     if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
       echo '<h3>Delivery to another person</h3>';
-      echo '<p><strong>'.__('First name: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) . '</p>';
-      echo '<p><strong>'.__('Last name: ').'</strong> ' . get_post_meta( $order->get_id(), 'billing_another_person_delivery_last_name', true ) . '</p>';
-      echo '<p><strong>'.__('Phone 1: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</p>';
-      echo '<p><strong>'.__('Phone 2: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</p>';
-      echo '<p><strong>'.__('Work place: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) . '</p>';
+      echo '<p><strong>'.__('First name: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) . '</span></p>';
+      echo '<p><strong>'.__('Last name: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true ) . '</span></p>';
+      echo '<p><strong>'.__('Phone 1: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</span></p>';
+      echo '<p><strong>'.__('Phone 2: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</span></p>';
+      echo '<p><strong>'.__('Work place: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_work_place', true ) . '</span></p>';
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) ) {
-      echo '<p><strong>'.__('Blessing message: ').'</strong> ' . get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) . '</p>';
+      echo '<p><strong>'.__('Blessing message: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) . '</span></p>';
     }
   }
 

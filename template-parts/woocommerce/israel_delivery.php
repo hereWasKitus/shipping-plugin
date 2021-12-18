@@ -6,6 +6,7 @@
     'billing_country',
     'billing_delivery_city',
     'billing_address_1',
+    'billing_postcode',
     'billing_delivery_apartment',
     'billing_delivery_house',
     'billing_delivery_floor',
