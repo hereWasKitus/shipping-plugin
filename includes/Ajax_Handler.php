@@ -90,7 +90,7 @@ function generate_json () {
     ];
   }
 
-  $json = str_replace('Array', '', json_encode($request_body));
+  $json = str_replace('Array', '', json_encode($request_body, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
 
   $upload = wp_upload_bits( "order_$order_id.txt", null, $json );
 
