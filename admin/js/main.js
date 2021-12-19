@@ -334,6 +334,11 @@
   }
 
   /**
+   * JSON Generator
+   */
+  await import('./modules/JSONGenerator.js');
+
+  /**
    * Form submit
    */
   $('.js-options-form').on('submit', async e => {

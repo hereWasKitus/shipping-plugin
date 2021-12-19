@@ -3,6 +3,7 @@ require_once __DIR__ . '/International_Delivery_Settings.php';
 require_once __DIR__ . '/Israel_Delivery_Settings.php';
 require_once __DIR__ . '/Pickup_From_Store_Settings.php';
 require_once __DIR__ . '/Another_Person_Delivery_Settings.php';
+require_once __DIR__ . '/JSON_Generator.php';
 
 class Shipping_Plugin {
 	/**
@@ -66,6 +67,7 @@ class Shipping_Plugin {
     $israel_delivery = new Israel_Delivery_Settings();
     $pickup = new Pickup_From_Store_Settings();
     $another_person_delivery = new Another_Person_Delivery_Settings();
+    $json_generator = new JSON_Generator();
 
     add_menu_page( 'Shipping options', 'Shipping options', 'administrator', PLUGIN_SLUG );
 
@@ -73,6 +75,7 @@ class Shipping_Plugin {
     add_submenu_page( PLUGIN_SLUG, 'Delivery within Israel', 'Delivery within Israel', 'administrator', 'israel_delivery', [$israel_delivery, 'page_html'] );
     add_submenu_page( PLUGIN_SLUG, 'Pickup from store', 'Pickup from store', 'administrator', 'store_pickup', [$pickup, 'page_html'] );
     add_submenu_page( PLUGIN_SLUG, 'Delivery for another person', 'Delivery for another person', 'administrator', 'for_another_person', [$another_person_delivery, 'page_html'] );
+    add_submenu_page( PLUGIN_SLUG, 'JSON', 'JSON generator', 'administrator', 'json_generator', [$json_generator, 'page_html'] );
   }
 
   function sp_get_csv_content () {
