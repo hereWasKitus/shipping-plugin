@@ -241,14 +241,10 @@ export const InternationalDelivery = (($) => {
         let hourFrom = +dateFrom.split(':')[0];
         let hourTo = +dateTo.split(':')[0];
 
-        optionsHTML += `<optgroup label="Slot ${index + 1}">`;
-
         for (let index = hourFrom; index <= hourTo; index++) {
           let text = `${index}`.length < 2 ? `0${index}` : index;
           optionsHTML += `<option>${text}:00</option>`;
         }
-
-        optionsHTML += `</optgroup>`;
       });
     } else {
       daySlots.forEach(([dateFrom, dateTo], index) => {
