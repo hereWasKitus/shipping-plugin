@@ -7,9 +7,12 @@
   $included_fields = [
     'billing_country',
     'billing_delivery_day',
-    'billing_delivery_timeset',
-    'billing_another_person_blessing'
+    'billing_delivery_timeset'
   ];
+
+  if ( $show_blessing ) {
+    array_push($included_fields, 'billing_another_person_blessing');
+  }
 
   foreach ( $included_fields as $field_name ) {
     if ( !isset( $fields[$field_name] ) ) continue;
