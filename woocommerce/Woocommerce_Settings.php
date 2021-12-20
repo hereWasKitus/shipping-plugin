@@ -114,6 +114,7 @@ class Woocommerce_Settings {
 
     if ( isset($_POST['billing_country']) && $_POST['billing_country'] == 'Israel' ) {
       $fields['billing']['billing_city']['required'] = false;
+      $fields['billing']['billing_postcode']['required'] = false;
     }
 
     if ( isset($_POST['delivery']) && $_POST['delivery'] == 'local_pickup' ) {
