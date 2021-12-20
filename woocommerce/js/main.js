@@ -12,4 +12,11 @@
   const { Blessing } = await import('./modules/Blessing.js');
   Blessing.init();
 
+  // Disable negative values for digital inputs
+  $('form.woocommerce-checkout input[type="number"]').on('input', e => {
+    if ( e.target.value.match(/^-+/)?.length ) {
+      e.target.value = e.target.value.slice(1);
+    }
+  });
+
 }))(jQuery);
