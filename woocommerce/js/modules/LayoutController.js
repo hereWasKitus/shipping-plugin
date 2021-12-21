@@ -2,7 +2,7 @@ export const LayoutController = ($ => {
 
   function bindEvents() {
     $('.js-layout-buttons button').on('click', handleButtonClick);
-    $(document.body).on('sp_layout_change', handleLayoutChange)
+    $(document.body).on('sp_layout_change', handleLayoutChange);
   }
 
   async function handleButtonClick(e) {

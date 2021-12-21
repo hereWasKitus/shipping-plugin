@@ -13,7 +13,7 @@
   Blessing.init();
 
   // Disable negative values for digital inputs
-  $('form.woocommerce-checkout input[type="number"]').on('input', e => {
+  $(document.body).on('input', 'form.woocommerce-checkout input[type="number"]', e => {
     if ( e.target.value.match(/^-+/)?.length ) {
       e.target.value = e.target.value.slice(1);
     }

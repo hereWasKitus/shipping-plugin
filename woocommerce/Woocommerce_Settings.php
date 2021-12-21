@@ -86,6 +86,7 @@ class Woocommerce_Settings {
       'label'     => __('House number', $domain),
       'required'  => false,
       'clear'     => true,
+      'type'      => 'number'
     ];
 
     $fields['billing']['billing_delivery_apartment'] = [
