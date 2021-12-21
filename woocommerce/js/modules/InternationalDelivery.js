@@ -97,6 +97,7 @@ export const InternationalDelivery = (($) => {
   function initDatePicker(selector, holidays) {
     let minDate = 1;
     let deliveryTime = israelDeliveryTime;
+    let days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
     if (layoutName === 'local_pickup') {
       minDate = 0;
@@ -129,6 +130,20 @@ export const InternationalDelivery = (($) => {
       minDate = 1;
     }
 
+    let currentDaySlots = deliveryTime[currentDayName].slots;
+
+    // if it's local pickup and it past delivery time - hide current day
+    if ( layoutName === 'local_pickup' && currentDaySlots.length ) {
+      let maxTime = currentDaySlots[currentDaySlots.length - 1][1];
+      let tempDate = new Date();
+      tempDate.setHours(maxTime.split(':')[0]);
+      tempDate.setMinutes(maxTime.split(':')[1]);
+
+      if ( currentDate.getTime() > tempDate.getTime() ) {
+        minDate = 1;
+      }
+    }
+
     $(selector).datepicker({
       dateFormat: 'dd/mm/y',
       minDate,
@@ -138,15 +153,16 @@ export const InternationalDelivery = (($) => {
           ? tooltipText
           : '';
 
-        let days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        let currentDayName = days[date.getDay()];
+        let currentIterationDayName = days[date.getDay()];
         let filledDays = [];
 
         for (const key in deliveryTime) {
           if ( deliveryTime[key].slots.length ) filledDays.push(key);
         }
 
-        let toShowDay = (holidays.indexOf(string) === -1) && (filledDays.indexOf(currentDayName) >= 0);
+        let toShowDay =
+          (holidays.indexOf(string) === -1) &&
+          (filledDays.indexOf(currentIterationDayName) >= 0);
 
         return [toShowDay, "", tooltip];
       }
@@ -227,7 +243,10 @@ export const InternationalDelivery = (($) => {
    */
   function getTimeOptionsHTML(dateString) {
     let dateArray = dateString.split('/');
-    const dayName = days[new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`).getDay()];
+    const targetDate = new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`);
+    const currentDate = new Date();
+    const dayName = days[targetDate.getDay()];
+
     // add condition to use israel delivery time
     let daySlots = lastSelectedCountry.toLowerCase() === 'israel'
       ? israelDeliveryTime[dayName].slots
@@ -237,17 +256,39 @@ export const InternationalDelivery = (($) => {
     let optionsHTML = '<option disabled>set time</option>';
 
     if ( layoutName === 'local_pickup' ) {
-      daySlots.forEach(([dateFrom, dateTo], index) => {
+      daySlots.forEach(([dateFrom, dateTo]) => {
         let hourFrom = +dateFrom.split(':')[0];
         let hourTo = +dateTo.split(':')[0];
 
         for (let index = hourFrom; index <= hourTo; index++) {
+
+          let target = new Date();
+          target.setHours(index);
+          target.setMinutes(+dateTo.split(':')[1]);
+
+          if (
+            (currentDate.getDate() === targetDate.getDate()) &&
+            (currentDate.getTime() > target.getTime()) ) {
+            continue;
+          }
+
           let text = `${index}`.length < 2 ? `0${index}` : index;
           optionsHTML += `<option>${text}:00</option>`;
         }
       });
     } else {
-      daySlots.forEach(([dateFrom, dateTo], index) => {
+      daySlots.forEach(([dateFrom, dateTo]) => {
+        let target = new Date();
+        target.setHours(+dateTo.split(':')[0]);
+        target.setMinutes(+dateTo.split(':')[1]);
+
+        if (
+          (currentCountry.toLocaleLowerCase() === 'israel') &&
+          (currentDate.getDate() === targetDate.getDate()) &&
+          (currentDate.getTime() > target.getTime()) ) {
+          return;
+        }
+
         optionsHTML += `<option>${dateFrom} - ${dateTo}</option>`;
       });
     }
