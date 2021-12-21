@@ -13,9 +13,9 @@
   Blessing.init();
 
   // Disable negative values for digital inputs
-  $(document.body).on('input', 'form.woocommerce-checkout input[type="number"]', e => {
-    if ( e.target.value.match(/^-+/)?.length ) {
-      e.target.value = e.target.value.slice(1);
+  $(document.body).on('keypress', 'form.woocommerce-checkout input[type="number"]', evt => {
+    if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57) {
+      evt.preventDefault();
     }
   });
 

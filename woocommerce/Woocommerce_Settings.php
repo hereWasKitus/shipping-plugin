@@ -364,7 +364,7 @@ class Woocommerce_Settings {
   function my_custom_order_meta_keys ($fields, $sent_to_admin, $order) {
     $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel';
 
-    if ( get_post_meta( $order->get_id(), '_billing_country', true ) ) {
+    if ( !$is_local_pickup && get_post_meta( $order->get_id(), '_billing_country', true ) ) {
       $fields['_billing_country'] = [
         'label' => 'Delivery country',
         'value' => get_post_meta( $order->get_id(), '_billing_country', true )
