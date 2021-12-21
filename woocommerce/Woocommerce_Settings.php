@@ -305,6 +305,8 @@ class Woocommerce_Settings {
   }
 
   public function sp_display_fields_in_order ($order) {
+    $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel';
+
     echo '<p><strong>'.__('Country: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_country', true ) . '</span></p>';
 
     if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
@@ -326,8 +328,11 @@ class Woocommerce_Settings {
       echo '<p><strong>'.__('Floor: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</span></p>';
     }
 
-    echo '<p><strong>'.__('Delivery day: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</span></p>';
-    echo '<p><strong>'.__('Delivery time: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</span></p>';
+    $day_title = $is_local_pickup ? 'Local pick up day: ' : 'Delivery day: ';
+    $time_title = $is_local_pickup ? 'Local pick time: ' : 'Delivery time: ';
+
+    echo '<p><strong>'.__($day_title)."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</span></p>';
+    echo '<p><strong>'.__($time_title)."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</span></p>';
 
     if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
       echo '<h3>Delivery to another person</h3>';
@@ -357,6 +362,15 @@ class Woocommerce_Settings {
   }
 
   function my_custom_order_meta_keys ($fields, $sent_to_admin, $order) {
+    $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel';
+
+    if ( get_post_meta( $order->get_id(), '_billing_country', true ) ) {
+      $fields['_billing_country'] = [
+        'label' => 'Delivery country',
+        'value' => get_post_meta( $order->get_id(), '_billing_country', true )
+      ];
+    }
+
     if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
       $fields['_billing_delivery_region'] = [
         'label' => 'Delivery region',
@@ -368,6 +382,13 @@ class Woocommerce_Settings {
       $fields['_billing_delivery_city'] = [
         'label' => 'Delivery city',
         'value' => get_post_meta( $order->get_id(), '_billing_delivery_city', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_address_1', true ) ) {
+      $fields['_billing_address_1'] = [
+        'label' => 'Delivery street',
+        'value' => get_post_meta( $order->get_id(), '_billing_address_1', true )
       ];
     }
 
@@ -394,14 +415,14 @@ class Woocommerce_Settings {
 
     if ( get_post_meta( $order->get_id(), '_billing_delivery_day', true ) ) {
       $fields['_billing_delivery_day'] = [
-        'label' => 'Delivery day',
+        'label' => $is_local_pickup ? 'Local pick up day' : 'Delivery day',
         'value' => get_post_meta( $order->get_id(), '_billing_delivery_day', true )
       ];
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) ) {
       $fields['_billing_delivery_timeset'] = [
-        'label' => 'Delivery time',
+        'label' => $is_local_pickup ? 'Local pick up time' : 'Delivery time',
         'value' => get_post_meta( $order->get_id(), '_billing_delivery_timeset', true )
       ];
     }
