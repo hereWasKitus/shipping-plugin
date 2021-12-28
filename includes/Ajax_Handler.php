@@ -20,6 +20,9 @@ function sp_layout_change () {
   wp_die();
 }
 
+/**
+ * JSON Generator
+ */
 add_action('wp_ajax_generate_json', 'generate_json');
 function generate_json () {
   $order_id = $_POST['order_id'];
@@ -35,15 +38,21 @@ function generate_json () {
 
   $base_data = $order -> get_base_data();
   $user = get_user_by('email', $base_data['billing']['email']);
-  $delivery_date = new DateTime( str_replace('/', '-', get_post_meta( $order_id, '_billing_delivery_day', true )) );
+  $delivery_date = DateTime::createFromFormat('d/m/y', get_post_meta( $order_id, '_billing_delivery_day', true ));
   $order_items = $order -> get_items();
 	$delivery_timeset = get_post_meta( $order_id, '_billing_delivery_timeset', true );
 	$is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && $base_data['billing']['country'] === 'Israel';
-
 	$delivery_time = [
 		"from" => $is_local_pickup ? $base_data['date_created'] -> date('G:i') : trim( explode('-', $delivery_timeset)[0] ),
 		"to" => $is_local_pickup ? $delivery_timeset : trim( explode('-', $delivery_timeset)[1] )
 	];
+	$paydate = $order -> get_date_paid() ?? $order -> get_date_created();
+	$city = $base_data['billing']['city'] ? $base_data['billing']['city'] : get_post_meta( $order->get_id(), '_billing_delivery_city', true );
+  $reward_points = 0;
+
+	if ( $base_data['billing']['country'] && $base_data['billing']['country'] !== 'Israel' ) {
+		$city .= ", " . $base_data['billing']['country'];
+	}
 
   $request_body = [
     'Orderid' => $order_id,
@@ -52,7 +61,7 @@ function generate_json () {
     'Cust' => [
       'custId' => $user ? $user -> ID : '',
       'custName' => "{$base_data['billing']['first_name']} {$base_data['billing']['last_name']}",
-      'custCity' => $base_data['billing']['city'] ? $base_data['billing']['city'] : get_post_meta( $order->get_id(), '_billing_delivery_city', true ),
+      'custCity' => $city,
       'custAddress' => $base_data['billing']['address_1'],
       'custTel' => $base_data['billing']['phone'],
       'custEmail' => $base_data['billing']['email']
@@ -63,7 +72,7 @@ function generate_json () {
         'shipmentdate' => $delivery_date -> format('d-m-Y'),
         'fromtime' => $delivery_time['from'],
         'totime' => $delivery_time['to'],
-        'company' => '',
+        'company' => get_post_meta( $order_id, '_billing_another_person_work_place', true ),
         'firstname' => get_post_meta( $order_id, '_billing_another_person_delivery_first_name', true ),
         'lastname' => get_post_meta( $order_id, '_billing_another_person_delivery_last_name', true ),
         'tel1' => get_post_meta( $order_id, '_billing_another_person_delivery_phone_1', true ),
@@ -76,7 +85,12 @@ function generate_json () {
         'blessing' => get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ),
       ]
     ],
-    'OrderItems' => []
+    'OrderItems' => [],
+    'OrderPayment' => [
+      'PayDate' => $paydate -> date('Y-m-d'),
+      'NumberOfPayments' => 1,
+      'FirstPayment' => $order -> get_total('edit')
+    ]
   ];
 
   foreach ($order_items as $item_id => $item) {
@@ -85,8 +99,17 @@ function generate_json () {
       'ItemId' => $product -> get_ID(),
       'ItemDesc' => $product -> get_description(),
       'ItemQty' => $item -> get_quantity(),
-      'UnitPrice' => $product -> get_price(),
-      'discount' => '',
+      'UnitPrice' => $product -> get_price()
+    ];
+  }
+
+  if ( $base_data['discount_total'] ) {
+    $request_body['OrderItems'][] = [
+      'ItemId' => 2922,
+      'ItemDesc' => '',
+      'ItemQty' => '-',
+      'UnitPrice' => "0.05",
+      'discount' => $base_data['discount_total']
     ];
   }
 
