@@ -1,9 +1,7 @@
 <?php
-/**
- * TODO:
- * [-] add method to receive international delivery fields
- * [-] add method to receive israel delivery fields
- */
+namespace SP\Woocommerce;
+
+use DateTime;
 
 class Woocommerce_Settings {
   public function __construct() {
@@ -21,6 +19,7 @@ class Woocommerce_Settings {
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
     add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
     add_filter('woocommerce_email_order_meta_fields', [$this, 'my_custom_order_meta_keys'], 10, 3);
+    add_action( 'woocommerce_new_order', [$this, 'modify_order_meta'] );
   }
 
   public function wc_scripts () {
@@ -58,7 +57,11 @@ class Woocommerce_Settings {
       'label'     => __('Day', $domain),
       'required'  => true,
       'class'     => ['sp-wc-calendar'],
-      'clear'     => true
+      'clear'     => true,
+      'custom_attributes' => [
+        'readonly' => true,
+        'autocomplete' => 'new-password'
+      ]
     ];
 
     $fields['billing']['billing_delivery_timeset'] = [
@@ -470,5 +473,180 @@ class Woocommerce_Settings {
     }
 
     return $fields;
+  }
+
+  function modify_order_meta ( $order_id ) {
+    global $wpdb;
+    $order = wc_get_order( $order_id );
+    $base_data = $order -> get_base_data();
+    $country = $base_data['billing']['country'];
+    $city = $base_data['billing']['city'] ?: get_post_meta( $order_id, '_billing_delivery_city', true );
+    $result = '';
+
+    if ( strtolower($country) === 'israel' && !$city ) {
+      update_post_meta($order_id, '_sku', '');
+      return;
+    }
+
+    if ( strtolower($country) === 'israel' ) {
+      $table = $wpdb -> prefix . 'sp_delivery_cities';
+      $result = $wpdb -> get_results("SELECT `sku`, `price` FROM $table WHERE `name` = '$city' LIMIT 1");
+    } else {
+      $table = $wpdb -> prefix . 'sp_delivery_countries';
+      $result = $wpdb -> get_results("SELECT `sku`, `price` FROM $table WHERE `name` = '$country' LIMIT 1");
+    }
+
+    $sku = count($result) ? $result[0] -> sku : '';
+    $price = count($result) ? $result[0] -> price : 0;
+    update_post_meta($order_id, '_sku', $sku);
+    update_post_meta($order_id, '_shipping_cost', $price);
+  }
+
+  public static function create_api_request_body ( $order_id ) {
+    $order = wc_get_order( $order_id );
+    $base_data = $order -> get_base_data();
+    $datetime = new DateTime();
+    $is_international = $base_data['billing']['country'] && $base_data['billing']['country'] !== 'Israel';
+    $delivery_date = $datetime -> createFromFormat('d/m/y', get_post_meta( $order_id, '_billing_delivery_day', true ));
+    $delivery_timeset = get_post_meta( $order_id, '_billing_delivery_timeset', true );
+    $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && $base_data['billing']['country'] === 'Israel';
+
+    $delivery_time = [
+      "from" => $is_local_pickup ? $base_data['date_created'] -> date('G:i') : trim( explode('-', $delivery_timeset)[0] ),
+      "to" => $is_local_pickup ? $delivery_timeset : trim( explode('-', $delivery_timeset)[1] )
+    ];
+    $paydate = $order -> get_date_paid() ?? $order -> get_date_created();
+
+    $city_field_data = array_filter([
+      get_post_meta( $order->get_id(), '_billing_delivery_region', true ),
+      $base_data['billing']['city'] ?: get_post_meta( $order->get_id(), '_billing_delivery_city', true ),
+      $is_international ? $base_data['billing']['country'] : ''
+    ]);
+
+    $request_body = [
+      'Orderid' => $order_id,
+      'OrderTitle' => $base_data['order_key'],
+      'OrderStatus' => $base_data['status'],
+      'Cust' => [
+        'custId' => get_post_meta($order_id, '_customer_user', true),
+        'custName' => "{$base_data['billing']['first_name']} {$base_data['billing']['last_name']}",
+        'custCity' => join(', ', $city_field_data),
+        'custAddress' => $base_data['billing']['address_1'],
+        'custTel' => $base_data['billing']['phone'],
+        'custEmail' => $base_data['billing']['email']
+      ],
+      'shipment' => [
+        [
+          'collection' => $is_local_pickup ? 0 : 1,
+          'shipmentdate' => $delivery_date -> format('d-m-Y'),
+          'fromtime' => $delivery_time['from'],
+          'totime' => $delivery_time['to'],
+          'company' => get_post_meta( $order_id, '_billing_another_person_work_place', true ),
+          'firstname' => get_post_meta( $order_id, '_billing_another_person_delivery_first_name', true ),
+          'lastname' => get_post_meta( $order_id, '_billing_another_person_delivery_last_name', true ),
+          'tel1' => get_post_meta( $order_id, '_billing_another_person_delivery_phone_1', true ),
+          'tel2' => get_post_meta( $order_id, '_billing_another_person_delivery_phone_2', true ),
+          'street' => $base_data['billing']['address_1'],
+          'number' => get_post_meta( $order->get_id(), '_billing_delivery_house', true ),
+          'entrance' => get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ),
+          'floor' => get_post_meta( $order->get_id(), '_billing_delivery_floor', true ),
+          'note' => $base_data['customer_note'],
+          'blessing' => get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ),
+        ]
+      ],
+      'OrderItems' => [],
+      'OrderPayment' => [
+        'PayDate' => $paydate -> date('Y-m-d'),
+        'NumberOfPayments' => 1,
+        'FirstPayment' => $order -> get_total('edit')
+      ]
+    ];
+
+    if ( $base_data['payment_method'] === 'zcredit_checkout_payment' ) {
+		$payment_response = get_post_meta( $order_id, 'zc_response', true );
+		$payment_info = json_decode(unserialize(base64_decode($payment_response)), true);
+		$payment_date = str_replace('/', '', $payment_info['ExpDate_MMYY']);
+
+		$order_payment = [];
+
+		if ( $payment_info['Installments'] > 1 ) {
+			for ( $i = 0; $i < $payment_info['Installments']; $i ++ ) {
+				$first_payment = $i === 0 ? $payment_info['FirstInstallentAmount'] : $payment_info['OtherInstallmentsAmount'];
+				array_push(
+					$order_payment,
+					[
+						'PayDate' => $paydate -> date('Y-m-d'),
+						'CreditName' => 'אשראי',
+						'CreditDateEnd' => $payment_date,
+						'CreditNumber' => $payment_info['CardNum'],
+						'NumberOfPayments' => $payment_info['Installments'],
+						'FirstPayment' => $first_payment,
+						'ReceiptNumber' => $payment_info['ApprovalNumber']
+					]
+				);
+			}
+		} else {
+			array_push(
+				$order_payment,
+				[
+					'PayDate' => $paydate -> date('Y-m-d'),
+					'CreditName' => 'אשראי',
+					'CreditDateEnd' => $payment_date,
+					'CreditNumber' => $payment_info['CardNum'],
+					'NumberOfPayments' => $payment_info['Installments'],
+					'FirstPayment' => $payment_info['Total'],
+					'ReceiptNumber' => $payment_info['ApprovalNumber']
+				]
+			);
+		}
+
+		$request_body['OrderPayment'] = $order_payment;
+	}
+
+    foreach ($order -> get_items() as $item) {
+      $product = $item -> get_product();
+      $cart_discount = get_post_meta($order_id, '_cart_discount', true) ?: 0;
+      $points_discount = get_post_meta($order_id, '_ywpar_coupon_amount', true) ?: 0;
+      $cart_discount_without_points = $cart_discount - $points_discount;
+      $cart_percent_discount = '';
+
+      if ( $cart_discount_without_points ) {
+        $cart_percent_discount = ($cart_discount_without_points / $order -> get_subtotal()) * 100;
+      }
+
+      $request_body['OrderItems'][] = [
+        'ItemId' => $product -> get_ID(),
+        'ItemDesc' => $product -> get_description(),
+        'ItemQty' => $item -> get_quantity(),
+        'UnitPrice' => $product -> get_price(),
+        'discount' => $cart_percent_discount
+      ];
+    }
+
+    // Add award points
+    if ( $points_amount = get_post_meta($order_id, '_ywpar_coupon_amount', true) ) {
+      $points_count = get_post_meta($order_id, '_ywpar_coupon_points', true);
+      // $percent = ($points_amount / $order -> get_subtotal()) * 100;
+      $request_body['OrderItems'][] = [
+        'ItemId' => 2822,
+        'ItemDesc' => '',
+        'ItemQty' => $points_count * -1,
+        'UnitPrice' => '0.05',
+        'discount' => ''
+      ];
+    }
+
+    // Add shipping item
+    if ( $sku = get_post_meta($order_id, '_sku', true) ) {
+      $request_body['OrderItems'][] = [
+        'ItemId' => $sku,
+        'ItemDesc' => '',
+        'ItemQty' => 1,
+        'UnitPrice' => get_post_meta($order_id, '_shipping_cost', true),
+        'discount' => ''
+      ];
+    }
+
+    return $request_body;
   }
 }

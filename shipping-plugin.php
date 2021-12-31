@@ -14,15 +14,6 @@
  * Text Domain:       shipping-plugin
  * Domain Path:       /languages
  */
-
-/**
- * TODO:
- * [~] Move ajax handler to different class
- * [-] Move markup to reusable template files
- * [-] Remove from submit unchanged fields
- * [-] Add default values for fields to prevent errors from javascript side
- */
-
 require_once __DIR__ . '/includes/Shipping_Plugin.php';
 require_once __DIR__ . '/woocommerce/Woocommerce_Settings.php';
 require_once __DIR__ . '/includes/Ajax_Handler.php';
@@ -37,5 +28,5 @@ if (
   in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_and_valid_plugins() )
   || in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_network_plugins() )
 ) {
-  $wcsettings = new Woocommerce_Settings();
+  $wcsettings = new SP\Woocommerce\Woocommerce_Settings();
 }
