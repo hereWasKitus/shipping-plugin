@@ -28,26 +28,6 @@ $checked = get_option('another_person_delivery_enabled');
     }
     ?>
 
-    <?php if ( count($blessings) ): ?>
-    <button class="button button-primary" id="js-choose-blessing">Choose blessing</button>
-
-    <div class="blessing-popup" id="blessing-popup">
-      <div class="blessing-block" id="blessing-popup">
-        <select id="js-blessing-category">
-          <option disabled selected>Choose category</option>
-
-          <?php foreach ( $blessings as $blessing ): ?>
-          <option value="<?= $blessing['categoryName'] ?>"><?= $blessing['categoryName'] ?></option>
-          <?php endforeach; ?>
-        </select>
-
-        <select id="js-blessing-message">
-          <option disabled selected>Choose message</option>
-        </select>
-
-        <button class="js-close">Close</button>
-      </div>
-    </div>
-    <?php endif; ?>
+    <?php include 'blessing_category_select.php'; ?>
   </div>
 </div>

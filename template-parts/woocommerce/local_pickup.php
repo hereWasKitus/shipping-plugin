@@ -23,26 +23,9 @@
     );
   }
 
-  if ( $show_blessing && count($blessings) ): ?>
-    <div class="form-row js-pickup-blessing">
-      <button class="button button-primary" id="js-choose-blessing">Choose blessing</button>
-      <div class="blessing-popup" id="blessing-popup">
-        <div class="blessing-block" id="blessing-popup">
-          <select id="js-blessing-category">
-            <option disabled selected>Choose category</option>
-            <?php foreach ( $blessings as $blessing ): ?>
-            <option value="<?= $blessing['categoryName'] ?>"><?= $blessing['categoryName'] ?></option>
-            <?php endforeach; ?>
-          </select>
-          <select id="js-blessing-message">
-            <option disabled selected>Choose message</option>
-          </select>
-          <button class="js-close">Close</button>
-        </div>
-      </div>
-    </div>
-  <?php endif; ?>
+  if ( $show_blessing ) {
+    include 'blessing_category_select.php';
+  }
 
-  <?php
   echo "<input type=\"hidden\" name=\"delivery\" value=\"local_pickup\">";
 ?>
