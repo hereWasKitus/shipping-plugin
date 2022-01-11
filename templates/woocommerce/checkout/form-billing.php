@@ -47,7 +47,7 @@ defined( 'ABSPATH' ) || exit;
 	<?php if ( get_option('sp_pickup_delivery') ): ?>
 	<p class="form-row form-row-wide js-layout-buttons">
 		<?php $layout = get_option('sp_israel_delivery') ? 'israel_delivery' : 'international_delivery'; ?>
-		<button data-layout="<?= $layout ?>" class="is-active"><?= __('Delivery', 'woocommerce') ?></button>
+		<button data-layout="delivery" class="is-active"><?= __('Delivery', 'woocommerce') ?></button>
 		<button data-layout="local_pickup">Local pickup</button>
 	</p>
 	<?php endif; ?>

@@ -1,5 +1,4 @@
 <?php
-// TODO: make this function main for layout changes
 add_action('wp_ajax_sp_layout_change', 'sp_layout_change');
 add_action('wp_ajax_nopriv_sp_layout_change', 'sp_layout_change');
 

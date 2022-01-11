@@ -2,6 +2,7 @@
 namespace SP\Woocommerce;
 
 use DateTime;
+use Exception;
 
 class Woocommerce_Settings {
   public function __construct() {
@@ -25,9 +26,22 @@ class Woocommerce_Settings {
   public function wc_scripts () {
     if (is_checkout()) {
       wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, true);
-      wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
-      wp_localize_script('sp-checkout', 'wpdata', [
-        'ajaxUrl' => admin_url('admin-ajax.php')
+      // wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
+      wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/common.js', ['jquery-ui'], false, true );
+      wp_localize_script('sp-checkout', 'sp_data', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'tooltipText' => get_option('sp_international_tooltip'),
+        'weekDays' => ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+        'holidays' => [
+          'israel' => get_option('sp_israel_public_holidays'),
+          'international' => get_option('sp_international_public_holidays'),
+          'pickup' => get_option('sp_pickup_public_holidays')
+        ],
+        'deliveryTime' => [
+          'israel' => get_option('sp_israel_delivery_time'),
+          'international' => get_option('sp_international_delivery_time'),
+          'pickup' => get_option('sp_pickup_delivery_time')
+        ]
       ]);
 
       wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
@@ -74,7 +88,6 @@ class Woocommerce_Settings {
         '' => 'Select time'
       ]
     ];
-
 
     $fields['billing']['billing_delivery_city'] = [
       'label'     => __('Town / City 1', $domain),
@@ -507,7 +520,7 @@ class Woocommerce_Settings {
     $base_data = $order -> get_base_data();
     $datetime = new DateTime();
     $is_international = $base_data['billing']['country'] && $base_data['billing']['country'] !== 'Israel';
-    $delivery_date = $datetime -> createFromFormat('d/m/y', get_post_meta( $order_id, '_billing_delivery_day', true ));
+    $delivery_date = $datetime -> createFromFormat('d/m/Y', get_post_meta( $order_id, '_billing_delivery_day', true ));
     $delivery_timeset = get_post_meta( $order_id, '_billing_delivery_timeset', true );
     $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && $base_data['billing']['country'] === 'Israel';
 
