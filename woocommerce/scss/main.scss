@@ -1,6 +1,12 @@
 @import './elements/_checkout';
 @import './elements/_blessing';
 
+body[data-layout="local_pickup"] #billing_country_field {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+
 .sp-another-person-delivery {
   margin-bottom: 15px;
 

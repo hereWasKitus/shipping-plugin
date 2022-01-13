@@ -379,6 +379,10 @@ jQuery(document).ready( async () => {
 
     $('.js-layout-buttons button').on('click', handleButtonClick);
 
+
+    $(document).on(SP_EVENTS.layoutChange, (e, {layoutName}) => {
+      $(document.body).attr('data-layout', layoutName);
+    })
   })(jQuery);
 
   // ==================================================
