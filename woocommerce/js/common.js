@@ -184,6 +184,13 @@ jQuery(document).ready( async () => {
       const targetDayName = sp_data.weekDays[targetDate.getDay()];
       let optionsHTML = '<option disabled>Choose time</option>';
 
+      if (
+        (SELECTED_COUNTRY.toLowerCase() === 'israel' && CURRENT_LAYOUT !== 'local_pickup' && sp_data.contactReceiver.israel ) ||
+        (CURRENT_LAYOUT !== 'local_pickup' && SELECTED_COUNTRY.toLowerCase() !== 'israel' && sp_data.contactReceiver.international )
+      ) {
+        optionsHTML += '<option>Contact receiver</option>'
+      }
+
       let slots = SELECTED_COUNTRY.toLowerCase() === 'israel'
         ? deliveryTime.israel[targetDayName].slots
         : CURRENT_LAYOUT === 'local_pickup'

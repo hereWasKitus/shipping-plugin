@@ -33,6 +33,7 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
     $settings = [
       'sp_israel_delivery' => 'Delivery within Israel:',
       'sp_israel_minimum_price_amount' => 'Minimum price amount:',
+      'sp_israel_contact_receiver' => 'Enable contact receiver:',
       'sp_israel_delivery_time' => 'Default business hours:',
       'sp_israel_public_holidays' => 'Public holidays:',
       'sp_israel_city_upload' => 'Upload CSV with cities:',
@@ -63,6 +64,16 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
     ";
 
     dbDelta( $cities_sql );
+  }
+
+  function sp_israel_contact_receiver_html () {
+    $val = get_option('sp_israel_contact_receiver');
+    ?>
+    <label class="switch">
+      <input type="checkbox" name="sp_israel_contact_receiver" <?= $val ? 'checked="cheked"' : '' ?>>
+      <span class="slider round"></span>
+    </label>
+    <?php
   }
 
   function sp_israel_delivery_html () {

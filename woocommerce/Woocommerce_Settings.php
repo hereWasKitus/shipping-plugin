@@ -2,7 +2,6 @@
 namespace SP\Woocommerce;
 
 use DateTime;
-use Exception;
 
 class Woocommerce_Settings {
   public function __construct() {
@@ -41,6 +40,10 @@ class Woocommerce_Settings {
           'israel' => get_option('sp_israel_delivery_time'),
           'international' => get_option('sp_international_delivery_time'),
           'pickup' => get_option('sp_pickup_delivery_time')
+        ],
+        'contactReceiver' => [
+          'international' => get_option('sp_international_contact_receiver'),
+          'israel' => get_option('sp_israel_contact_receiver')
         ]
       ]);
 
@@ -521,13 +524,17 @@ class Woocommerce_Settings {
     $datetime = new DateTime();
     $is_international = $base_data['billing']['country'] && $base_data['billing']['country'] !== 'Israel';
     $delivery_date = $datetime -> createFromFormat('d/m/Y', get_post_meta( $order_id, '_billing_delivery_day', true ));
+    $is_contact_receiver = preg_match('/[a-zA-Z]/', get_post_meta( $order_id, '_billing_delivery_timeset', true ));
     $delivery_timeset = get_post_meta( $order_id, '_billing_delivery_timeset', true );
     $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && $base_data['billing']['country'] === 'Israel';
+    $delivery_time = false;
 
-    $delivery_time = [
-      "from" => $is_local_pickup ? $base_data['date_created'] -> date('G:i') : trim( explode('-', $delivery_timeset)[0] ),
-      "to" => $is_local_pickup ? $delivery_timeset : trim( explode('-', $delivery_timeset)[1] )
-    ];
+    if ( !$is_contact_receiver ) {
+      $delivery_time = [
+        "from" => $is_local_pickup ? $base_data['date_created'] -> date('G:i') : trim( explode('-', $delivery_timeset)[0] ),
+        "to" => $is_local_pickup ? $delivery_timeset : trim( explode('-', $delivery_timeset)[1] )
+      ];
+    }
     $paydate = $order -> get_date_paid() ?? $order -> get_date_created();
 
     $city_field_data = array_filter([
@@ -552,8 +559,6 @@ class Woocommerce_Settings {
         [
           'collection' => $is_local_pickup ? 0 : 1,
           'shipmentdate' => $delivery_date -> format('d-m-Y'),
-          'fromtime' => $delivery_time['from'],
-          'totime' => $delivery_time['to'],
           'company' => get_post_meta( $order_id, '_billing_another_person_work_place', true ),
           'firstname' => get_post_meta( $order_id, '_billing_another_person_delivery_first_name', true ),
           'lastname' => get_post_meta( $order_id, '_billing_another_person_delivery_last_name', true ),
@@ -574,6 +579,11 @@ class Woocommerce_Settings {
         'FirstPayment' => $order -> get_total('edit')
       ]
     ];
+
+    if ( $delivery_time ) {
+      $request_body['shipment']['fromtime'] = $delivery_time['from'];
+      $request_body['shipment']['totime'] = $delivery_time['to'];
+    }
 
     if ( $base_data['payment_method'] === 'zcredit_checkout_payment' ) {
 		$payment_response = get_post_meta( $order_id, 'zc_response', true );

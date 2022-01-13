@@ -34,6 +34,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
       'sp_international_delivery' => 'International delivery:',
       'sp_international_minimum_price_amount' => 'Minimum price amount:',
       'sp_international_tooltip' => 'Tooltip text:',
+      'sp_international_contact_receiver' => 'Enable contact receiver:',
       'sp_international_delivery_time' => 'Default business hours:',
       'sp_international_public_holidays' => 'Public holidays:',
       'sp_international_country_upload' => 'Upload CSV with countries:',
@@ -64,6 +65,16 @@ class International_Delivery_Settings implements Setting_Page_Interface {
     ";
 
     dbDelta( $countries_sql );
+  }
+
+  function sp_international_contact_receiver_html () {
+    $val = get_option('sp_international_contact_receiver');
+    ?>
+    <label class="switch">
+      <input type="checkbox" name="sp_international_contact_receiver" <?= $val ? 'checked="cheked"' : '' ?>>
+      <span class="slider round"></span>
+    </label>
+    <?php
   }
 
   function sp_international_tooltip_html () {
