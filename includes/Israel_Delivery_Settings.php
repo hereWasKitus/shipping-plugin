@@ -96,6 +96,10 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
 
     <div class="sp-schedule">
       <?php foreach ($days as $day) : ?>
+        <?php
+        $preparation_time = isset($schedule_array[$day]['preparationTime']) ? esc_attr($schedule_array[$day]['preparationTime']) : '';
+        $next_day_delivery = isset($schedule_array[$day]['nextDayDelivery']) ? esc_attr($schedule_array[$day]['nextDayDelivery']) : '';
+        ?>
         <div class="sp-schedule-day" data-day="<?= $day ?>">
           <h4 class="sp-schedule-day__title"><?= $day ?></h4>
           <ul class="sp-schedule-day__slots">
@@ -112,7 +116,8 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
-          <input autocomplete="new-password" value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
+          <input autocomplete="new-password" value="<?= $next_day_delivery ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
+          <input autocomplete="new-password" value="<?= $preparation_time ?>" class="preparation-time" type="number" style="display: block; margin: 10px auto 0;" placeholder="Preparation time">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_israel_delivery_time" value="<?php echo esc_attr($val) ?>" />

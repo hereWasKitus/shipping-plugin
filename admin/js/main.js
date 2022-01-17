@@ -127,7 +127,8 @@
       let inputs = dayEl.querySelectorAll('.js-timepicker:not(.next-day-delivery)');
       schedule[dayName] = {
         slots: [],
-        nextDayDelivery: dayEl.querySelector('.next-day-delivery').value
+        nextDayDelivery: dayEl.querySelector('.next-day-delivery').value,
+        preparationTime: dayEl.querySelector('.preparation-time').value
       };
 
       if (!inputs.length) return;

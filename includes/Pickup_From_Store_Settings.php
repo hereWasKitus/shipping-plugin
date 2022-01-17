@@ -64,6 +64,9 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
 
     <div class="sp-schedule">
       <?php foreach ($days as $day) : ?>
+        <?php
+        $preparation_time = isset($schedule_array[$day]['preparationTime']) ? esc_attr($schedule_array[$day]['preparationTime']) : '';
+        ?>
         <div class="sp-schedule-day" data-day="<?= $day ?>">
           <h4 class="sp-schedule-day__title"><?= $day ?></h4>
           <ul class="sp-schedule-day__slots">
@@ -81,6 +84,7 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
           </ul>
           <button class="button button-primary js-add-schedule" data-interval="60">Add +</button>
           <input value="" class="next-day-delivery" type="hidden">
+          <input autocomplete="new-password" value="<?= $preparation_time ?>" class="preparation-time" type="number" style="display: block; margin: 10px auto 0;" placeholder="Preparation time">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_pickup_delivery_time" value="<?php echo esc_attr($val) ?>" />

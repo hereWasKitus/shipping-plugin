@@ -182,7 +182,14 @@ jQuery(document).ready( async () => {
       const targetDate = new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`);
       const currentDate = new Date();
       const targetDayName = sp_data.weekDays[targetDate.getDay()];
+      let preparationTime = false;
       let optionsHTML = '<option disabled>Choose time</option>';
+
+      if (SELECTED_COUNTRY.toLowerCase() === 'israel' && CURRENT_LAYOUT !== 'local_pickup') {
+        preparationTime = deliveryTime.israel[targetDayName].preparationTime;
+      } else if (CURRENT_LAYOUT === 'local_pickup') {
+        preparationTime = deliveryTime.pickup[targetDayName].preparationTime;
+      }
 
       if (
         (SELECTED_COUNTRY.toLowerCase() === 'israel' && CURRENT_LAYOUT !== 'local_pickup' && sp_data.contactReceiver.israel ) ||
@@ -191,11 +198,15 @@ jQuery(document).ready( async () => {
         optionsHTML += '<option>Contact receiver</option>'
       }
 
-      let slots = SELECTED_COUNTRY.toLowerCase() === 'israel'
-        ? deliveryTime.israel[targetDayName].slots
-        : CURRENT_LAYOUT === 'local_pickup'
-          ? deliveryTime.pickup[targetDayName].slots
+      let slots = CURRENT_LAYOUT === 'local_pickup'
+        ? deliveryTime.pickup[targetDayName].slots
+        : SELECTED_COUNTRY.toLowerCase() === 'israel'
+          ? deliveryTime.israel[targetDayName].slots
         : deliveryTime.international[targetDayName].slots
+
+      if ( preparationTime && (SELECTED_COUNTRY.toLowerCase() || CURRENT_LAYOUT === 'local_pickup') ) {
+        currentDate.setMinutes(+preparationTime + currentDate.getMinutes());
+      }
 
       if ( CURRENT_LAYOUT === 'local_pickup' ) {
         slots.forEach(([dateFrom, dateTo]) => {
@@ -220,9 +231,7 @@ jQuery(document).ready( async () => {
         });
       } else {
         slots.forEach(([dateFrom, dateTo]) => {
-          let target = new Date();
-          target.setHours(+dateTo.split(':')[0]);
-          target.setMinutes(+dateTo.split(':')[1]);
+          let target = transformTime(dateTo);
 
           if (
             (SELECTED_COUNTRY.toLocaleLowerCase() === 'israel') &&
