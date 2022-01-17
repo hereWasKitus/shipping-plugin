@@ -1,6 +1,5 @@
 <?php
 namespace SP\Woocommerce;
-
 use DateTime;
 
 class Woocommerce_Settings {
@@ -15,11 +14,12 @@ class Woocommerce_Settings {
     add_filter( 'woocommerce_checkout_fields', [$this, 'sp_another_person_fields'] );
     add_filter( 'woocommerce_locate_template', [$this, 'woo_adon_plugin_template'], 1, 3 );
     add_action( 'woocommerce_cart_calculate_fees', [$this, 'sp_add_cart_fee'] );
-    add_action( 'woocommerce_admin_order_data_after_billing_address', [$this, 'sp_display_fields_in_order'] );
+    // add_action( 'woocommerce_admin_order_data_after_shipping_address', [$this, 'sp_display_fields_in_order'] );
     add_filter( 'woocommerce_countries',  [$this, 'sp_woo_countries'] );
     add_filter( 'woocommerce_after_checkout_validation', [$this, 'sp_checkout_validation'], 10, 2 );
     add_filter('woocommerce_email_order_meta_fields', [$this, 'my_custom_order_meta_keys'], 10, 3);
     add_action( 'woocommerce_new_order', [$this, 'modify_order_meta'] );
+    add_filter( 'woocommerce_order_get_formatted_shipping_address', [$this, 'order_customer_detail_modifier'], 10, 3 );
   }
 
   public function wc_scripts () {
@@ -325,46 +325,79 @@ class Woocommerce_Settings {
 
   public function sp_display_fields_in_order ($order) {
     $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel';
+    $is_contact_receiver = preg_match('/[a-zA-Z]/', get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ));
 
-    echo '<p><strong>'.__('Country: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_country', true ) . '</span></p>';
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
+      $first_name = get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true );
+      $last_name = get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true );
+      echo '<p><strong>'.__('Full name: ')."</strong> </br> <span>" . "$first_name $last_name" . '</span></p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_address_1', true ) ) {
+      $street = get_post_meta( $order->get_id(), '_billing_address_1', true );
+      $house = get_post_meta( $order->get_id(), '_billing_delivery_house', true );
+      $val = $house ? "$street, $house" : $street;
+      echo '<p><strong>'.__('Street: ')."</strong> </br> <span>" . $val . '</span></p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) ) {
+      echo '<p><strong>'.__('Floor: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</span></p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) ) {
+      echo '<p><strong>'.__('Apartment number: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) . '</span></p>';
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
+      echo '<p><strong>'.__('City: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_city', true ) . '</span></p>';
+    }
 
     if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
       echo '<p><strong>'.__('Region: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_region', true ) . '</span></p>';
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_address_1', true ) ) {
-      echo '<p><strong>'.__('Street: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_address_1', true ) . '</span></p>';
+    if ( get_post_meta( $order->get_id(), '_billing_postcode', true ) ) {
+      echo '<p><strong>'.__('ZIP: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_postcode', true ) . '</span></p>';
     }
 
-    if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' ) {
-      echo '<p><strong>'.__('Delivery method: ')."</strong> </br> <span>" . 'pickup from store' . '</span></p>';
+    echo '<p><strong>'.__('Country: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_country', true ) . '</span></p>';
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_work_place', true ) ) {
+      echo '<p><strong>'.__('Work place: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_work_place', true ) . '</span></p>';
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' && get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
-      echo '<p><strong>'.__('City: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_city', true ) . '</span></p>';
-      echo '<p><strong>'.__('House: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_house', true ) . '</span></p>';
-      echo '<p><strong>'.__('Apartment: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) . '</span></p>';
-      echo '<p><strong>'.__('Floor: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) . '</span></p>';
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) ) {
+      echo '<p><strong>'.__('Phone 1: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</span></p>';
     }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) ) {
+      echo '<p><strong>'.__('Phone 2: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</span></p>';
+    }
+
+    // local pickup branch
+    // waiting...
 
     $day_title = $is_local_pickup ? 'Local pick up day: ' : 'Delivery day: ';
     $time_title = $is_local_pickup ? 'Local pick time: ' : 'Delivery time: ';
 
     echo '<p><strong>'.__($day_title)."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . '</span></p>';
-    echo '<p><strong>'.__($time_title)."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</span></p>';
 
-    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
-      echo '<h3>Delivery to another person</h3>';
-      echo '<p><strong>'.__('First name: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) . '</span></p>';
-      echo '<p><strong>'.__('Last name: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true ) . '</span></p>';
-      echo '<p><strong>'.__('Phone 1: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) . '</span></p>';
-      echo '<p><strong>'.__('Phone 2: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_2', true ) . '</span></p>';
-      echo '<p><strong>'.__('Work place: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_work_place', true ) . '</span></p>';
+    if ( !$is_contact_receiver ) {
+      echo '<p><strong>'.__($time_title)."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . '</span></p>';
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) ) {
-      echo '<p><strong>'.__('Blessing message: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) . '</span></p>';
+      echo '<p><strong>'.__('Greeting message: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) . '</span></p>';
     }
+
+    // if ( !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel' ) {
+    //   echo '<p><strong>'.__('Delivery method: ')."</strong> </br> <span>" . 'pickup from store' . '</span></p>';
+    // }
+
+    // if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
+    //   echo '<p><strong>'.__('First name: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) . '</span></p>';
+    //   echo '<p><strong>'.__('Last name: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true ) . '</span></p>';
+    // }
   }
 
   public function sp_checkout_validation ($fields, $errors) {
@@ -382,32 +415,26 @@ class Woocommerce_Settings {
 
   function my_custom_order_meta_keys ($fields, $sent_to_admin, $order) {
     $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && get_post_meta( $order->get_id(), '_billing_country', true ) === 'Israel';
+    $is_contact_receiver = preg_match('/[a-zA-Z]/', get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ));
 
-    if ( !$is_local_pickup && get_post_meta( $order->get_id(), '_billing_country', true ) ) {
-      $fields['_billing_country'] = [
-        'label' => 'Delivery country',
-        'value' => get_post_meta( $order->get_id(), '_billing_country', true )
-      ];
-    }
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
+      $first_name = get_post_meta($order -> get_id(), '_billing_another_person_delivery_first_name', true);
+      $last_name = get_post_meta($order -> get_id(), '_billing_another_person_delivery_last_name', true);
 
-    if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
-      $fields['_billing_delivery_region'] = [
-        'label' => 'Delivery region',
-        'value' => get_post_meta( $order->get_id(), '_billing_delivery_region', true )
-      ];
-    }
-
-    if ( get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
-      $fields['_billing_delivery_city'] = [
-        'label' => 'Delivery city',
-        'value' => get_post_meta( $order->get_id(), '_billing_delivery_city', true )
+      $fields['_billing_full_name'] = [
+        'label' => 'Full name',
+        'value' => "$first_name $last_name"
       ];
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_address_1', true ) ) {
+      $street = get_post_meta( $order->get_id(), '_billing_address_1', true );
+      $house = get_post_meta( $order->get_id(), '_billing_delivery_house', true );
+      $val = $house ? "$street, $house" : $street;
+
       $fields['_billing_address_1'] = [
         'label' => 'Delivery street',
-        'value' => get_post_meta( $order->get_id(), '_billing_address_1', true )
+        'value' => $val
       ];
     }
 
@@ -418,13 +445,6 @@ class Woocommerce_Settings {
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) ) {
-      $fields['_billing_delivery_apartment'] = [
-        'label' => 'Delivery apartment number',
-        'value' => get_post_meta( $order->get_id(), '_billing_delivery_apartment', true )
-      ];
-    }
-
     if ( get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) ) {
       $fields['_billing_delivery_floor'] = [
         'label' => 'Floor',
@@ -432,32 +452,43 @@ class Woocommerce_Settings {
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_delivery_day', true ) ) {
-      $fields['_billing_delivery_day'] = [
-        'label' => $is_local_pickup ? 'Local pick up day' : 'Delivery day',
-        'value' => get_post_meta( $order->get_id(), '_billing_delivery_day', true )
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_apartment', true ) ) {
+      $fields['_billing_delivery_apartment'] = [
+        'label' => 'Delivery apartment number',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_apartment', true )
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) ) {
-      $fields['_billing_delivery_timeset'] = [
-        'label' => $is_local_pickup ? 'Local pick up time' : 'Delivery time',
-        'value' => get_post_meta( $order->get_id(), '_billing_delivery_timeset', true )
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_city', true ) ) {
+      $fields['_billing_delivery_city'] = [
+        'label' => 'Delivery city',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_city', true )
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
-      $fields['_billing_another_person_delivery_first_name'] = [
-        'label' => 'Recipient first name',
-        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true )
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_region', true ) ) {
+      $fields['_billing_delivery_region'] = [
+        'label' => 'Delivery region',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_region', true )
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true ) ) {
-      $fields['_billing_another_person_delivery_last_name'] = [
-        'label' => 'Recipient last name',
-        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true )
+    if ( get_post_meta( $order->get_id(), '_billing_postcode', true ) ) {
+      $fields['_billing_postcode'] = [
+        'label' => 'ZIP',
+        'value' => get_post_meta( $order->get_id(), '_billing_postcode', true )
       ];
+    }
+
+    if ( !$is_local_pickup && get_post_meta( $order->get_id(), '_billing_country', true ) ) {
+      $fields['_billing_country'] = [
+        'label' => 'Delivery country',
+        'value' => get_post_meta( $order->get_id(), '_billing_country', true )
+      ];
+    }
+
+    if ( get_post_meta( $order->get_id(), '_billing_another_person_work_place', true ) ) {
+      echo '<p><strong>'.__('Workplace: ')."</strong> </br> <span>" . get_post_meta( $order->get_id(), '_billing_another_person_work_place', true ) . '</span></p>';
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_phone_1', true ) ) {
@@ -474,19 +505,42 @@ class Woocommerce_Settings {
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true ) ) {
-      $fields['_billing_another_person_delivery_work_place'] = [
-        'label' => 'Recipient work place',
-        'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_work_place', true )
+    // local delivery branch
+
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_day', true ) ) {
+      $fields['_billing_delivery_day'] = [
+        'label' => $is_local_pickup ? 'Local pick up day' : 'Delivery day',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_day', true )
+      ];
+    }
+
+    if ( !$is_contact_receiver && get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) ) {
+      $fields['_billing_delivery_timeset'] = [
+        'label' => $is_local_pickup ? 'Local pick up time' : 'Delivery time',
+        'value' => get_post_meta( $order->get_id(), '_billing_delivery_timeset', true )
       ];
     }
 
     if ( get_post_meta( $order->get_id(), '_billing_another_person_blessing', true ) ) {
       $fields['_billing_another_person_blessing'] = [
-        'label' => 'Recipient blessing',
+        'label' => 'Greeting message',
         'value' => get_post_meta( $order->get_id(), '_billing_another_person_blessing', true )
       ];
     }
+
+    // if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true ) ) {
+    //   $fields['_billing_another_person_delivery_first_name'] = [
+    //     'label' => 'Recipient first name',
+    //     'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_first_name', true )
+    //   ];
+    // }
+
+    // if ( get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true ) ) {
+    //   $fields['_billing_another_person_delivery_last_name'] = [
+    //     'label' => 'Recipient last name',
+    //     'value' => get_post_meta( $order->get_id(), '_billing_another_person_delivery_last_name', true )
+    //   ];
+    // }
 
     return $fields;
   }
@@ -671,5 +725,83 @@ class Woocommerce_Settings {
     }
 
     return $request_body;
+  }
+
+  function order_customer_detail_modifier ( $address, $raw_address, $order ) {
+    $order_id = $order -> get_id();
+    $html = $address . "<br>";
+    $country = get_post_meta($order_id, '_billing_country', true);
+    $is_local_pickup = !get_post_meta( $order_id, '_billing_delivery_city', true ) && $country === 'Israel';
+    $is_contact_receiver = preg_match('/[a-zA-Z]/', get_post_meta( $order_id, '_billing_delivery_timeset', true ));
+
+    if ( get_post_meta( $order_id, '_billing_another_person_delivery_first_name', true ) ) {
+      $first_name = get_post_meta( $order_id, '_billing_another_person_delivery_first_name', true );
+      $last_name = get_post_meta( $order_id, '_billing_another_person_delivery_last_name', true );
+      $html .= "Full name: $first_name $last_name<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_address_1', true ) ) {
+      $street = get_post_meta( $order_id, '_billing_address_1', true );
+      $house = get_post_meta( $order_id, '_billing_delivery_house', true );
+      $val = $house ? "$street, $house" : $street;
+      $html .= "Street: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_delivery_floor', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_delivery_floor', true );
+      $html .= "Floor: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_delivery_apartment', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_delivery_apartment', true );
+      $html .= "Apartment: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_delivery_region', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_delivery_region', true );
+      $html .= "Region: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_postcode', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_postcode', true );
+      $html .= "ZIP: $val<br>";
+    }
+
+    if ( $country ) {
+      $html .= "Country: $country<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_another_person_work_place', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_another_person_work_place', true );
+      $html .= "Work place: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_another_person_delivery_phone_1', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_another_person_delivery_phone_1', true );
+      $html .= "Phone 1: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_another_person_delivery_phone_2', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_another_person_delivery_phone_2', true );
+      $html .= "Phone 2: $val<br>";
+    }
+
+    // delivery branch
+
+    $day_title = $is_local_pickup ? 'Local pick up day: ' : 'Delivery day: ';
+    $time_title = $is_local_pickup ? 'Local pick time: ' : 'Delivery time: ';
+
+    $html .= __($day_title) . " " . get_post_meta( $order->get_id(), '_billing_delivery_day', true ) . "<br>";
+
+    if ( !$is_contact_receiver ) {
+      $html .= __($time_title) . " " . get_post_meta( $order->get_id(), '_billing_delivery_timeset', true ) . "<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_another_person_blessing', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_another_person_blessing', true );
+      $html .= "Greeting: $val<br>";
+    }
+
+    return $html;
   }
 }
