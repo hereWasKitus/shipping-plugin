@@ -51,7 +51,7 @@ class Shipping_Plugin {
     wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, false);
     wp_enqueue_script('jquery-ui-multi-datepicker', PLUGIN_DIR . 'libs/jquery-ui-multi-datepicker/jquery-ui.multidatespicker.js', ['jquery-ui'], null, false);
     wp_enqueue_script('jquery-timepicker', PLUGIN_DIR . 'libs/jquery-timepicker/jquery.timepicker.min.js', ['jquery'], null, false);
-    wp_enqueue_script('main', PLUGIN_DIR . 'admin/js/main.js', [], null, false);
+    wp_enqueue_script('main', PLUGIN_DIR . 'admin/dist/js/main.js', [], null, false);
     wp_localize_script('main', 'wpdata', [
       'ajaxUrl' => admin_url('admin-ajax.php')
     ]);
@@ -59,7 +59,7 @@ class Shipping_Plugin {
     wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
     wp_enqueue_style('jquery-ui-multi-datepicker', PLUGIN_DIR . 'libs/jquery-ui-multi-datepicker/jquery-ui.multidatespicker.css');
     wp_enqueue_style('jquery-timepicker', PLUGIN_DIR . 'libs/jquery-timepicker/jquery.timepicker.min.css');
-    wp_enqueue_style('main', PLUGIN_DIR . 'admin/dist/main.css');
+    wp_enqueue_style('main', PLUGIN_DIR . 'admin/dist/css/main.css');
   }
 
   function setup_admin_pages () {

@@ -1,6 +1,5 @@
 (($) => $(document).ready(async () => {
-
-  console.log('Shipping plugin script started');
+  console.log('kek');
   const locationsToDelete = [];
 
   /**
