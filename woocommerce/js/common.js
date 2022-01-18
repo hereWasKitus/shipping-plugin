@@ -4,8 +4,13 @@ jQuery(document).ready( async () => {
     layoutChange: 'sp_layout_change'
   };
   let SELECTED_COUNTRY = 'israel';
-  let CURRENT_LAYOUT = 'delivery'; // delivery | local_pickup
+  let CURRENT_LAYOUT = 'delivery'; // delivery | international_delivery | israel_delivery | local_pickup
 
+  /**
+   * Replace checkout form with new template
+   * @param {String} templateName name of the template to load
+   * @param {String} country country
+   */
   const changeLayoutHTML = async (templateName, country = '') => {
     const body = new FormData();
     body.append('action', 'sp_layout_change');
@@ -26,6 +31,13 @@ jQuery(document).ready( async () => {
       layoutName: templateName
     });
   }
+
+  /**
+   * Set Israel as country after each layout change
+   */
+  jQuery(document.body).on(SP_EVENTS.layoutChange, (e, {layoutName}) => {
+    layoutName === 'local_pickup' && (SELECTED_COUNTRY = 'israel');
+  });
 
   /**
    * Datepicker
@@ -62,6 +74,34 @@ jQuery(document).ready( async () => {
     }
 
     /**
+     * Tells if current time is past provided time string
+     * @param {String} time string format hh:mm
+     * @returns {Boolean} is current time past provided
+     */
+    function isPastTime ( time ) {
+      if ( !time ) return false;
+
+      let d1 = new Date();
+      let d2 = transformTime(time);
+
+      return d1.getTime() > d2.getTime();
+    }
+
+    /**
+     * Tells if current time is past delivery slots time
+     * @param {Array} slots array of time slots
+     * @returns {Boolean}
+     */
+    function isPastSlots ( slots ) {
+      let d1 = new Date();
+      let maxTime = slots[slots.length - 1][1];
+      let d2 = transformTime(maxTime);
+
+      // console.log(d1.getTime() > d2.getTime());
+      return d1.getTime() > d2.getTime();
+    }
+
+    /**
      * Setup datepicker
      * @param {String} selector DOM node selector
      * @param {Array<String>} holidays Date strings of holidays
@@ -69,45 +109,28 @@ jQuery(document).ready( async () => {
      * @param {String} layoutName Current checkout fields layout
      */
     function setupDatepicker (selector, holidays, deliveryTime, layoutName) {
-      // assume that delivery is available starting the next day
-      let minDate = 1;
+      let minDate = (isInternational() && sp_data.sameDayDelivery) ? 0 : 1;
       let days = sp_data.weekDays;
       let curDate = new Date();
       let curDayName = days[curDate.getDay()];
       let timeSlots = deliveryTime[curDayName].slots;
 
+      /**
+       * When do we deliver today?
+        - when (it's Israel) and (the time isn't past nddt)
+        - when (it's International delivery) and (current day delivery enabled) and (time not past nddt)
+        - when (it's local pickup)
+       */
       if (
-        (layoutName === 'local_pickup') ||
-        (layoutName === 'delivery' && SELECTED_COUNTRY.toLowerCase() === 'israel')
+        ( isIsrael() && !isPastTime(deliveryTime[curDayName].nextDayDelivery) ) ||
+        ( isInternational() && sp_data.sameDayDelivery && !isPastTime(deliveryTime[curDayName].nextDayDelivery) ) ||
+        ( isLocalPickup() )
       ) {
         minDate = 0;
       }
 
-      // if (layoutName === 'delivery' && SELECTED_COUNTRY.toLowerCase() === 'israel') {
-      //   timeSlots.forEach(timeSlot => {
-      //     let from = transformTime(timeSlot[0]);
-      //     let to = transformTime(timeSlot[1]);
-
-
-      //   });
-      // }
-
-      if ( deliveryTime[curDayName].nextDayDelivery ) {
-        let nextDayDelivery = new Date();
-        nextDayDelivery.setHours(deliveryTime[curDayName].nextDayDelivery.split(':')[0])
-        nextDayDelivery.setMinutes(deliveryTime[curDayName].nextDayDelivery.split(':')[1])
-        minDate = curDate.getTime() > nextDayDelivery.getTime() ? 1 : 0;
-      }
-
-      if ( layoutName === 'local_pickup' && timeSlots.length ) {
-        let maxTime = timeSlots[timeSlots.length - 1][1];
-        let tempDate = new Date();
-        tempDate.setHours(maxTime.split(':')[0]);
-        tempDate.setMinutes(maxTime.split(':')[1]);
-
-        if ( curDate.getTime() > tempDate.getTime() ) {
-          minDate = 1;
-        }
+      if ( isPastSlots(timeSlots) ) {
+        minDate = 1;
       }
 
       $(selector).datepicker({
@@ -137,14 +160,14 @@ jQuery(document).ready( async () => {
     }
 
     function handleLayoutChange (e, {layoutName}) {
-      if ( layoutName === 'local_pickup' ) {
+      if ( isLocalPickup() ) {
         setupDatepicker(
           datepickerSelector,
           holidays['pickup'],
           deliveryTime['pickup'],
           layoutName
         );
-      } else if ( layoutName === 'delivery' && SELECTED_COUNTRY.toLowerCase() === 'israel' ) {
+      } else if ( isIsrael() ) {
         setupDatepicker(
           datepickerSelector,
           holidays['israel'],
@@ -185,30 +208,32 @@ jQuery(document).ready( async () => {
       let preparationTime = false;
       let optionsHTML = '<option disabled>Choose time</option>';
 
-      if (SELECTED_COUNTRY.toLowerCase() === 'israel' && CURRENT_LAYOUT !== 'local_pickup') {
+      if ( isIsrael() ) {
         preparationTime = deliveryTime.israel[targetDayName].preparationTime;
-      } else if (CURRENT_LAYOUT === 'local_pickup') {
+      } else if ( isLocalPickup() ) {
         preparationTime = deliveryTime.pickup[targetDayName].preparationTime;
+      } else if ( isInternational() ) {
+        preparationTime = deliveryTime.international[targetDayName].preparationTime;
       }
 
       if (
-        (SELECTED_COUNTRY.toLowerCase() === 'israel' && CURRENT_LAYOUT !== 'local_pickup' && sp_data.contactReceiver.israel ) ||
-        (CURRENT_LAYOUT !== 'local_pickup' && SELECTED_COUNTRY.toLowerCase() !== 'israel' && sp_data.contactReceiver.international )
+        (isIsrael() && sp_data.contactReceiver.israel ) ||
+        (isInternational() && sp_data.contactReceiver.international )
       ) {
         optionsHTML += '<option>Contact receiver</option>'
       }
 
-      let slots = CURRENT_LAYOUT === 'local_pickup'
+      let slots = isLocalPickup()
         ? deliveryTime.pickup[targetDayName].slots
-        : SELECTED_COUNTRY.toLowerCase() === 'israel'
+        : isIsrael()
           ? deliveryTime.israel[targetDayName].slots
         : deliveryTime.international[targetDayName].slots
 
-      if ( preparationTime && (SELECTED_COUNTRY.toLowerCase() || CURRENT_LAYOUT === 'local_pickup') ) {
+      if ( preparationTime && (isIsrael() || isLocalPickup()) ) {
         currentDate.setMinutes(+preparationTime + currentDate.getMinutes());
       }
 
-      if ( CURRENT_LAYOUT === 'local_pickup' ) {
+      if ( isLocalPickup() ) {
         slots.forEach(([dateFrom, dateTo]) => {
           let hourFrom = +dateFrom.split(':')[0];
           let hourTo = +dateTo.split(':')[0];
@@ -406,6 +431,7 @@ jQuery(document).ready( async () => {
   /**
    * Deep JSON parse
    * @param {String|Object} json - JSON string or Object that contains JSON strings
+   * @returns {Object} javascript object of parsed JSON
    */
   function deepJSONParse ( json ) {
     function isJsonString(str) {
@@ -440,6 +466,30 @@ jQuery(document).ready( async () => {
     date.setHours(hours);
     date.setMinutes(minutes);
     return date;
+  }
+
+  /**
+   * Check if it's Israel delivery
+   * @returns {Boolean} is Israel delivery
+   */
+  function isIsrael () {
+    return SELECTED_COUNTRY.toLowerCase() === 'israel' && CURRENT_LAYOUT !== 'local_pickup';
+  }
+
+  /**
+   * Check if it's local pickup
+   * @returns {Boolean} is local pickup
+   */
+  function isLocalPickup () {
+    return CURRENT_LAYOUT === 'local_pickup';
+  }
+
+  /**
+   * Check if it's international delivery
+   * @returns {Boolean} is international delivery
+   */
+  function isInternational () {
+    return CURRENT_LAYOUT !== 'local_pickup' && SELECTED_COUNTRY.toLowerCase() !== 'israel';
   }
 
 // end of script

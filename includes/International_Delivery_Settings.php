@@ -35,6 +35,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
       'sp_international_minimum_price_amount' => 'Minimum price amount:',
       'sp_international_tooltip' => 'Tooltip text:',
       'sp_international_contact_receiver' => 'Enable contact receiver:',
+      'sp_international_same_day_delivery' => 'Delivery in the same day:',
       'sp_international_delivery_time' => 'Default business hours:',
       'sp_international_public_holidays' => 'Public holidays:',
       'sp_international_country_upload' => 'Upload CSV with countries:',
@@ -67,6 +68,16 @@ class International_Delivery_Settings implements Setting_Page_Interface {
     dbDelta( $countries_sql );
   }
 
+  function sp_international_same_day_delivery_html () {
+    $val = get_option('sp_international_same_day_delivery');
+    ?>
+    <label class="switch">
+      <input type="checkbox" name="sp_international_same_day_delivery" <?= $val ? 'checked="cheked"' : '' ?>>
+      <span class="slider round"></span>
+    </label>
+    <?php
+  }
+
   function sp_international_contact_receiver_html () {
     $val = get_option('sp_international_contact_receiver');
     ?>
@@ -86,6 +97,7 @@ class International_Delivery_Settings implements Setting_Page_Interface {
 
   function sp_international_delivery_time_html() {
     $val = get_option('sp_international_delivery_time');
+    $is_same_day_delivery = get_option('sp_international_same_day_delivery');
     $schedule_array = json_decode($val, true);
 
     $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -93,6 +105,10 @@ class International_Delivery_Settings implements Setting_Page_Interface {
 
     <div class="sp-schedule">
       <?php foreach ($days as $day) : ?>
+        <?php
+        $preparation_time = isset($schedule_array[$day]['preparationTime']) ? esc_attr($schedule_array[$day]['preparationTime']) : '';
+        $next_day_delivery = isset($schedule_array[$day]['nextDayDelivery']) ? esc_attr($schedule_array[$day]['nextDayDelivery']) : '';
+        ?>
         <div class="sp-schedule-day" data-day="<?= $day ?>">
           <h4 class="sp-schedule-day__title"><?= $day ?></h4>
           <ul class="sp-schedule-day__slots">
@@ -109,7 +125,8 @@ class International_Delivery_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
-          <input value="<?= esc_attr($schedule_array[$day]['nextDayDelivery']) ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
+          <input value="<?= $next_day_delivery ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
+          <input autocomplete="new-password" value="<?= $preparation_time ?>" class="preparation-time" type="number" style="display: <?= $is_same_day_delivery ? "block" : "none" ?>; margin: 10px auto 0;" placeholder="Preparation time">
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_international_delivery_time" value="<?php echo esc_attr($val) ?>" />

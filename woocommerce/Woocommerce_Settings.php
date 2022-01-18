@@ -44,7 +44,8 @@ class Woocommerce_Settings {
         'contactReceiver' => [
           'international' => get_option('sp_international_contact_receiver'),
           'israel' => get_option('sp_israel_contact_receiver')
-        ]
+        ],
+        'sameDayDelivery' => get_option('sp_international_same_day_delivery')
       ]);
 
       wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
