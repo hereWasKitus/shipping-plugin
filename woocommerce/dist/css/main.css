@@ -1,0 +1,88 @@
+body.woocommerce-checkout {
+  /* Chrome, Safari, Edge, Opera */
+  /* Firefox */
+}
+body.woocommerce-checkout .woocommerce-shipping-totals.shipping {
+  display: none;
+}
+body.woocommerce-checkout input::-webkit-outer-spin-button,
+body.woocommerce-checkout input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+body.woocommerce-checkout input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.ui-datepicker td.ui-state-disabled {
+  pointer-events: auto;
+}
+
+.blessing-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.blessing-popup.is-active {
+  opacity: 1;
+  pointer-events: all;
+}
+.blessing-popup-header p {
+  margin: 0;
+}
+.blessing-popup-inner {
+  width: 100%;
+  max-width: 500px;
+  padding: 16px;
+  border-radius: 4px;
+  background-color: #fff;
+  text-align: right;
+}
+.blessing-popup-list {
+  max-height: 350px;
+  padding: 16px 0;
+  margin: 16px 0 0;
+  list-style-type: none;
+  overflow: auto;
+}
+.blessing-popup-list li {
+  margin: 0;
+  padding: 8px;
+  border: 1px solid grey;
+  border-radius: 4px;
+}
+.blessing-popup-list li:not(:last-child) {
+  margin-bottom: 16px;
+}
+
+body[data-layout=local_pickup] #billing_country_field {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+
+body[data-layout=local_pickup] .sp-another-person-delivery {
+  display: none;
+}
+
+.sp-another-person-delivery {
+  margin-bottom: 15px;
+}
+.sp-another-person-delivery input ~ div {
+  display: none;
+}
+.sp-another-person-delivery input:checked ~ div {
+  display: block;
+}
+/*# sourceMappingURL=main.css.map */

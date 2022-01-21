@@ -7,6 +7,10 @@ body[data-layout="local_pickup"] #billing_country_field {
   z-index: -1;
 }
 
+body[data-layout="local_pickup"] .sp-another-person-delivery {
+  display: none;
+}
+
 .sp-another-person-delivery {
   margin-bottom: 15px;
 

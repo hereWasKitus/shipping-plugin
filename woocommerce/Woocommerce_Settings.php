@@ -50,7 +50,7 @@ class Woocommerce_Settings {
       ]);
 
       wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
-      wp_enqueue_style('sp-main', PLUGIN_DIR . 'woocommerce/dist/main.css');
+      wp_enqueue_style('sp-main', PLUGIN_DIR . 'woocommerce/dist/css/main.css');
     }
   }
 

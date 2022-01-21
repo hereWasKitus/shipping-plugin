@@ -32,6 +32,10 @@
     "admincss": {
       "source": "admin/scss/main.scss",
       "distDir": "admin/dist/css"
+    },
+    "woocommercecss": {
+      "source": "woocommerce/scss/main.scss",
+      "distDir": "woocommerce/dist/css"
     }
   },
   "dependencies": {
