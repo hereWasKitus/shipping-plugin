@@ -226,12 +226,7 @@ jQuery(document).ready( async () => {
       let preparationTime = deliveryTime[targetDayName].preparationTime;
       let optionsHTML = '<option disabled>Choose time</option>';
 
-      if (contactReceiver) {
-        optionsHTML += '<option>Contact receiver</option>'
-      }
-
       let slots = deliveryTime[targetDayName].slots;
-
 
       if ( preparationTime && showPreparationTime ) {
         currentDate.setMinutes(+preparationTime + currentDate.getMinutes());
@@ -271,6 +266,10 @@ jQuery(document).ready( async () => {
 
           optionsHTML += `<option>${dateFrom} - ${dateTo}</option>`;
         });
+      }
+
+      if (contactReceiver) {
+        optionsHTML += '<option>Contact receiver</option>'
       }
 
       return optionsHTML;
