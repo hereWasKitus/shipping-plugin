@@ -142,7 +142,18 @@
       this[globalName] = mainExports;
     }
   }
-})({"3cRd4":[function(require,module,exports) {
+})({"kn9T2":[function(require,module,exports) {
+var Refresh = require('react-refresh/runtime');
+Refresh.injectIntoGlobalHook(window);
+window.$RefreshReg$ = function() {
+};
+window.$RefreshSig$ = function() {
+    return function(type) {
+        return type;
+    };
+};
+
+},{"react-refresh/runtime":"786KC"}],"3cRd4":[function(require,module,exports) {
 "use strict";
 var HMR_HOST = null;
 var HMR_PORT = 1234;
@@ -655,36 +666,6 @@ class BlessingList extends HTMLElement {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, '__esModule', {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === 'default' || key === '__esModule' || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}]},["3cRd4"], null, "parcelRequire2a8c")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["kn9T2","3cRd4"], null, "parcelRequire2a8c")
 
 //# sourceMappingURL=BlessingList.f50b2295.js.map

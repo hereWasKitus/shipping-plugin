@@ -1,0 +1,25 @@
+.delivery-branch-list {
+  width: 100%;
+  max-width: 800px;
+
+  margin: 16px 0 0;
+
+  li:not(:last-child) {
+    margin-bottom: 10px;
+  }
+}
+
+.delivery-branch {
+  &__remove-btn {
+    display: inline-block;
+    margin-left: 10px;
+
+    &:hover {
+      color: $color-red;
+    }
+  }
+
+  &__checkbox-container {
+    margin-left: 16px;
+  }
+}

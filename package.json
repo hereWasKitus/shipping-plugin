@@ -2,7 +2,6 @@
   "name": "shipping-plugin",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "watch": "parcel watch",
     "build": "parcel build",
@@ -21,6 +20,7 @@
   "homepage": "https://github.com/hereWasKitus/shipping-plugin#readme",
   "devDependencies": {
     "@parcel/transformer-sass": "^2.2.1",
+    "@parcel/transformer-vue": "^2.2.1",
     "parcel": "^2.2.1",
     "sass": "^1.43.4"
   },
@@ -33,5 +33,13 @@
       "source": "admin/scss/main.scss",
       "distDir": "admin/dist/css"
     }
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.7.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-multi-date-picker": "^3.3.0",
+    "react-redux": "^7.2.6",
+    "uuid": "^8.3.2"
   }
 }

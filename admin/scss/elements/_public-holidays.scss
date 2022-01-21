@@ -1,12 +1,15 @@
 .sp-public-holidays-container {
   display: flex;
+  margin-top: 16px;
 
-  #sp-public-holidays {
+  #sp-public-holidays,
+  .sp-public-holidays {
     margin-left: 20px;
   }
 }
 
-#sp-public-holidays {
+#sp-public-holidays,
+.sp-public-holidays {
   width: 400px;
   padding: 10px;
 

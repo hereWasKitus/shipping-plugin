@@ -1,6 +1,20 @@
+import ReactDOM from 'react-dom';
+import BranchApp from './components/Branch/BranchApp.jsx';
+
 (($) => $(document).ready(async () => {
-  console.log('kek');
   const locationsToDelete = [];
+
+  if ( document.getElementById('branches') ) {
+    ReactDOM.render(<BranchApp />, document.getElementById('branches'));
+  }
+
+  $('.js-options-form').on('submit', e => {
+    e.preventDefault();
+
+    $(document.body).trigger('settings_save', {
+      submit: () => e.currentTarget.submit()
+    });
+  })
 
   /**
    * Timepicker
@@ -341,15 +355,19 @@
   /**
    * Form submit
    */
-  $('.js-options-form').on('submit', async e => {
-    e.preventDefault();
-
+  $(document.body).on('settings_save', async (e, {submit}) => {
     // Schedule
     const scheduleInput = document.querySelector('.sp-schedule-input');
 
-    if (scheduleInput) {
+    if (scheduleInput && !document.querySelector('#branches')) {
       let scheduleValues = collectScheduleValues();
       scheduleInput.value = JSON.stringify(scheduleValues);
+    }
+
+    if ( document.querySelector('#branches') ) {
+      const {store} = await import('./store');
+      const state = store.getState();
+      document.querySelector('[name="sp_pickup_branches"]').value = JSON.stringify(state.branches);
     }
 
     // Locations
@@ -438,7 +456,7 @@
       document.querySelector('.js-blessing-field').value = JSON.stringify(data);
     }
 
-    e.currentTarget.submit();
+    submit();
   });
 
 }))(jQuery);

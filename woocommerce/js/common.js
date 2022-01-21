@@ -1,10 +1,13 @@
 jQuery(document).ready( async () => {
   const SP_EVENTS = {
     dateChange: 'date_change',
-    layoutChange: 'sp_layout_change'
+    layoutChange: 'sp_layout_change',
+    branchChange: 'sp_branch_change'
   };
   let SELECTED_COUNTRY = 'israel';
+  let SELECTED_BRANCH = 0;
   let CURRENT_LAYOUT = 'delivery'; // delivery | international_delivery | israel_delivery | local_pickup
+  let BRANCHES = deepJSONParse(sp_data.deliveryTime.pickup_branches);
 
   /**
    * Replace checkout form with new template
@@ -93,6 +96,7 @@ jQuery(document).ready( async () => {
      * @returns {Boolean}
      */
     function isPastSlots ( slots ) {
+      if ( !slots.length ) return;
       let d1 = new Date();
       let maxTime = slots[slots.length - 1][1];
       let d2 = transformTime(maxTime);
@@ -133,6 +137,10 @@ jQuery(document).ready( async () => {
         minDate = 1;
       }
 
+      console.log('before init: ', deliveryTime);
+
+      $(selector).datepicker('destroy');
+
       $(selector).datepicker({
         dateFormat: 'dd/mm/yy',
         minDate,
@@ -150,6 +158,8 @@ jQuery(document).ready( async () => {
             if ( deliveryTime[key].slots.length ) filledDays.push(key);
           }
 
+          console.log('inside loop', deliveryTime);
+
           let toShowDay =
             (holidays.indexOf(string) === -1) &&
             (filledDays.indexOf(loopDayName) >= 0);
@@ -160,21 +170,14 @@ jQuery(document).ready( async () => {
     }
 
     function handleLayoutChange (e, {layoutName}) {
-      if ( isLocalPickup() ) {
-        setupDatepicker(
-          datepickerSelector,
-          holidays['pickup'],
-          deliveryTime['pickup'],
-          layoutName
-        );
-      } else if ( isIsrael() ) {
+      if ( isIsrael() ) {
         setupDatepicker(
           datepickerSelector,
           holidays['israel'],
           deliveryTime['israel'],
           layoutName
         );
-      } else {
+      } else if ( isInternational() ) {
         setupDatepicker(
           datepickerSelector,
           holidays['international'],
@@ -184,12 +187,27 @@ jQuery(document).ready( async () => {
       }
     }
 
+    function handleBranchChange (e, {name, index}) {
+      SELECTED_BRANCH = index;
+
+      let branchHolidays = BRANCHES[SELECTED_BRANCH].holidays;
+      let branchDeliveryTime = BRANCHES[SELECTED_BRANCH].schedule;
+
+      setupDatepicker(
+        datepickerSelector,
+        branchHolidays,
+        branchDeliveryTime,
+        CURRENT_LAYOUT
+      );
+    }
+
     setupDefaults();
     setupDatepicker(datepickerSelector, holidays['israel'], deliveryTime['israel'], CURRENT_LAYOUT);
     $(document.body).on('change', datepickerSelector, e => {
       $(document.body).trigger(SP_EVENTS.dateChange, [e.currentTarget.value]);
     });
     $(document.body).on(SP_EVENTS.layoutChange, handleLayoutChange);
+    $(document.body).on(SP_EVENTS.branchChange, handleBranchChange);
 
   })(jQuery);
 
@@ -200,40 +218,26 @@ jQuery(document).ready( async () => {
     const timeSelectSelector = '.sp-wc-time select';
     const deliveryTime = deepJSONParse(sp_data.deliveryTime);
 
-    function getOptionsHTML ( dateString ) {
+    function getOptionsHTML ( dateString, deliveryTime, contactReceiver, showPreparationTime, isLocalPickup ) {
       let dateArray = dateString.split('/');
       const targetDate = new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`);
       const currentDate = new Date();
       const targetDayName = sp_data.weekDays[targetDate.getDay()];
-      let preparationTime = false;
+      let preparationTime = deliveryTime[targetDayName].preparationTime;
       let optionsHTML = '<option disabled>Choose time</option>';
 
-      if ( isIsrael() ) {
-        preparationTime = deliveryTime.israel[targetDayName].preparationTime;
-      } else if ( isLocalPickup() ) {
-        preparationTime = deliveryTime.pickup[targetDayName].preparationTime;
-      } else if ( isInternational() ) {
-        preparationTime = deliveryTime.international[targetDayName].preparationTime;
-      }
-
-      if (
-        (isIsrael() && sp_data.contactReceiver.israel ) ||
-        (isInternational() && sp_data.contactReceiver.international )
-      ) {
+      if (contactReceiver) {
         optionsHTML += '<option>Contact receiver</option>'
       }
 
-      let slots = isLocalPickup()
-        ? deliveryTime.pickup[targetDayName].slots
-        : isIsrael()
-          ? deliveryTime.israel[targetDayName].slots
-        : deliveryTime.international[targetDayName].slots
+      let slots = deliveryTime[targetDayName].slots;
 
-      if ( preparationTime && (isIsrael() || isLocalPickup()) ) {
+
+      if ( preparationTime && showPreparationTime ) {
         currentDate.setMinutes(+preparationTime + currentDate.getMinutes());
       }
 
-      if ( isLocalPickup() ) {
+      if ( isLocalPickup ) {
         slots.forEach(([dateFrom, dateTo]) => {
           let hourFrom = +dateFrom.split(':')[0];
           let hourTo = +dateTo.split(':')[0];
@@ -273,7 +277,15 @@ jQuery(document).ready( async () => {
     }
 
     function handleDateChange (e, dateString) {
-      $(timeSelectSelector).html( getOptionsHTML(dateString) );
+      let delivery = isIsrael()
+        ? deliveryTime.israel
+        : isLocalPickup() ? BRANCHES[SELECTED_BRANCH].schedule
+        : deliveryTime.international;
+
+      let contactReceiver = (isIsrael() && sp_data.contactReceiver.israel ) || (isInternational() && sp_data.contactReceiver.international );
+      let showPreparationTime = isIsrael() || isLocalPickup();
+
+      $(timeSelectSelector).html( getOptionsHTML(dateString, delivery, contactReceiver, showPreparationTime, isLocalPickup()) );
     }
 
     $(document.body).on(SP_EVENTS.dateChange, handleDateChange);
@@ -424,6 +436,38 @@ jQuery(document).ready( async () => {
     $(document).on(SP_EVENTS.layoutChange, (e, {layoutName}) => {
       $(document.body).attr('data-layout', layoutName);
     })
+  })(jQuery);
+
+  /**
+   * Branches
+   */
+  ($ => {
+    const branchesSelector = '[name="billing_delivery_branch"]';
+
+    function handleBranchChange (e) {
+      const name = e.currentTarget.selectedOptions[0].textContent;
+      const index = e.currentTarget.selectedIndex;
+
+      if ( index === 0 ) return;
+
+      $(document.body).trigger(SP_EVENTS.branchChange, {
+        name,
+        index: index - 1
+      });
+    }
+
+    function handleLayoutChange (e, {layoutName}) {
+      const default_branch = BRANCHES.find(b => b.isDefault);
+
+      if ( !layoutName === 'local_pickup' || !default_branch ) return;
+
+      // +1 because there are 2 branches but 3 items in select where the 1 is placeholder
+      $(branchesSelector).get(0).selectedIndex = BRANCHES.indexOf(default_branch) + 1;
+      $(branchesSelector).trigger('change');
+    }
+
+    $(document).on('change', branchesSelector, handleBranchChange);
+    $(document).on(SP_EVENTS.layoutChange, handleLayoutChange);
   })(jQuery);
 
   // ==================================================

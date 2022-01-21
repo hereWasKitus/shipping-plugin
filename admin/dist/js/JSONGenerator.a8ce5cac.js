@@ -142,7 +142,18 @@
       this[globalName] = mainExports;
     }
   }
-})({"gi8xq":[function(require,module,exports) {
+})({"kn9T2":[function(require,module,exports) {
+var Refresh = require('react-refresh/runtime');
+Refresh.injectIntoGlobalHook(window);
+window.$RefreshReg$ = function() {
+};
+window.$RefreshSig$ = function() {
+    return function(type) {
+        return type;
+    };
+};
+
+},{"react-refresh/runtime":"786KC"}],"gi8xq":[function(require,module,exports) {
 "use strict";
 var HMR_HOST = null;
 var HMR_PORT = 1234;
@@ -551,6 +562,6 @@ const JSONGenerator = (()=>{
 })();
 JSONGenerator.init();
 
-},{}]},["gi8xq"], null, "parcelRequire2a8c")
+},{}]},["kn9T2","gi8xq"], null, "parcelRequire2a8c")
 
 //# sourceMappingURL=JSONGenerator.a8ce5cac.js.map

@@ -39,13 +39,14 @@ class Woocommerce_Settings {
         'deliveryTime' => [
           'israel' => get_option('sp_israel_delivery_time'),
           'international' => get_option('sp_international_delivery_time'),
-          'pickup' => get_option('sp_pickup_delivery_time')
+          'pickup_branches' => get_option('sp_pickup_branches'),
         ],
         'contactReceiver' => [
           'international' => get_option('sp_international_contact_receiver'),
           'israel' => get_option('sp_israel_contact_receiver')
         ],
-        'sameDayDelivery' => get_option('sp_international_same_day_delivery')
+        'sameDayDelivery' => get_option('sp_international_same_day_delivery'),
+        'showPickupBlessing' => get_option('sp_pickup_show_person_blessing')
       ]);
 
       wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
@@ -129,6 +130,14 @@ class Woocommerce_Settings {
       'clear'     => true,
     ];
 
+    $fields['billing']['billing_delivery_branch'] = [
+      'required'  => false,
+      'clear'     => true,
+      'class'     => ['sp-wc-branches'],
+      'type'      => 'select',
+      'options'   => $this -> get_branches(),
+    ];
+
     if ( isset($_POST['billing_country']) && $_POST['billing_country'] !== 'Israel' ) {
       $fields['billing']['billing_delivery_city']['required'] = false;
     }
@@ -147,6 +156,20 @@ class Woocommerce_Settings {
     }
 
     return $fields;
+  }
+
+  function get_branches() {
+    $branches = json_decode(get_option('sp_pickup_branches'), true);
+    $res = ['Select branch'];
+
+    if (is_array($branches) && count($branches)) {
+      foreach ($branches as $index => $branch ) {
+        $key = "{$branch['name']}_$index";
+        $res[$key] = $branch['name'];
+      }
+    }
+
+    return $res;
   }
 
   public function woo_adon_plugin_template( $template, $template_name, $template_path ) {
@@ -785,6 +808,12 @@ class Woocommerce_Settings {
     if ( get_post_meta( $order_id, '_billing_another_person_delivery_phone_2', true ) ) {
       $val = get_post_meta( $order_id, '_billing_another_person_delivery_phone_2', true );
       $html .= "Phone 2: $val<br>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_delivery_branch', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_delivery_branch', true );
+      $val = substr($val, 0, strlen($val) - 2); // remove postfix
+      $html .= "Local delivery branch: $val<br>";
     }
 
     // delivery branch

@@ -27,15 +27,24 @@
       display: flex;
       align-items: center;
 
-      & > input {
+      & > input,
+      & > select {
         width: 49%;
+      }
+
+      .timeselect {
+        margin: 0 5px;
+        input {
+          width: 100%;
+        }
       }
 
       &:not(:last-child) {
         margin-bottom: 10px;
       }
 
-      .js-remove-slot {
+      .js-remove-slot,
+      .remove-slot {
         margin-left: 15px;
         transition: color $transition-duration ease;
 

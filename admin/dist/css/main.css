@@ -136,17 +136,25 @@
   display: flex;
   align-items: center;
 }
-.sp-schedule-day__slot > input {
+.sp-schedule-day__slot > input, .sp-schedule-day__slot > select {
   width: 49%;
+}
+.sp-schedule-day__slot .timeselect {
+  margin: 0 5px;
+}
+.sp-schedule-day__slot .timeselect input {
+  width: 100%;
 }
 .sp-schedule-day__slot:not(:last-child) {
   margin-bottom: 10px;
 }
-.sp-schedule-day__slot .js-remove-slot {
+.sp-schedule-day__slot .js-remove-slot,
+.sp-schedule-day__slot .remove-slot {
   margin-left: 15px;
   transition: color 0.15s ease;
 }
-.sp-schedule-day__slot .js-remove-slot:hover {
+.sp-schedule-day__slot .js-remove-slot:hover,
+.sp-schedule-day__slot .remove-slot:hover {
   color: #e74c3c;
 }
 .sp-schedule-day .button {
@@ -169,12 +177,15 @@
 
 .sp-public-holidays-container {
   display: flex;
+  margin-top: 16px;
 }
-.sp-public-holidays-container #sp-public-holidays {
+.sp-public-holidays-container #sp-public-holidays,
+.sp-public-holidays-container .sp-public-holidays {
   margin-left: 20px;
 }
 
-#sp-public-holidays {
+#sp-public-holidays,
+.sp-public-holidays {
   width: 400px;
   padding: 10px;
   border: 1px solid #eaeaea;
@@ -251,6 +262,26 @@
 
 .sp-field-settings {
   margin: 0;
+}
+
+.delivery-branch-list {
+  width: 100%;
+  max-width: 800px;
+  margin: 16px 0 0;
+}
+.delivery-branch-list li:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.delivery-branch__remove-btn {
+  display: inline-block;
+  margin-left: 10px;
+}
+.delivery-branch__remove-btn:hover {
+  color: #e74c3c;
+}
+.delivery-branch__checkbox-container {
+  margin-left: 16px;
 }
 
 .blessings-container {

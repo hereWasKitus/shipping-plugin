@@ -53,7 +53,8 @@ class Shipping_Plugin {
     wp_enqueue_script('jquery-timepicker', PLUGIN_DIR . 'libs/jquery-timepicker/jquery.timepicker.min.js', ['jquery'], null, false);
     wp_enqueue_script('main', PLUGIN_DIR . 'admin/dist/js/main.js', [], null, false);
     wp_localize_script('main', 'wpdata', [
-      'ajaxUrl' => admin_url('admin-ajax.php')
+      'ajaxUrl' => admin_url('admin-ajax.php'),
+      'branches' => get_option('sp_pickup_branches')
     ]);
 
     wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');
