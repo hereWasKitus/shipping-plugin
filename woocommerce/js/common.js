@@ -20,6 +20,8 @@ jQuery(document).ready( async () => {
     body.append('template', templateName);
     body.append('country', country);
 
+    jQuery('.js-delivery-fields-container').addClass('is-loading');
+
     const resp = await fetch(sp_data.ajaxUrl, {
       method: 'POST',
       body
@@ -29,6 +31,8 @@ jQuery(document).ready( async () => {
     CURRENT_LAYOUT = templateName;
 
     jQuery('.js-delivery-fields-container').html(data.data);
+
+    jQuery('.js-delivery-fields-container').removeClass('is-loading');
 
     jQuery(document.body).trigger(SP_EVENTS.layoutChange, {
       layoutName: templateName
