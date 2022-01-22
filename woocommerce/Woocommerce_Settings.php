@@ -45,8 +45,7 @@ class Woocommerce_Settings {
           'international' => get_option('sp_international_contact_receiver'),
           'israel' => get_option('sp_israel_contact_receiver')
         ],
-        'sameDayDelivery' => get_option('sp_international_same_day_delivery'),
-        'showPickupBlessing' => get_option('sp_pickup_show_person_blessing')
+        'sameDayDelivery' => get_option('sp_international_same_day_delivery')
       ]);
 
       wp_enqueue_style('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.css');

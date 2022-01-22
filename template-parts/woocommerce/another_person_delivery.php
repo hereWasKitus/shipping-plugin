@@ -1,19 +1,6 @@
 <?php
 $checkout = WC() -> checkout;
 $fields = $checkout->get_checkout_fields( 'billing' );
-$show_blessing = get_option('sp_pickup_show_person_blessing');
-
-
-if ( !$show_blessing ) {
-  ?>
-  <style>
-    body[data-layout="local_pickup"] #billing_another_person_blessing_field,
-    body[data-layout="local_pickup"] #billing_another_person_blessing_field + .form-row {
-      display: none;
-    }
-  </style>
-  <?php
-}
 
 $included_fields = [
   'billing_another_person_delivery_first_name',

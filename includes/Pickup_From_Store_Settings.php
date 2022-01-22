@@ -31,7 +31,6 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
   public function setup_settings() {
     $settings = [
       'sp_pickup_delivery' => 'Enable pickup from store:',
-      'sp_pickup_show_person_blessing' => 'Show blessing on local pickup:',
       'sp_pickup_branches' => 'Branches:'
     ];
 
@@ -58,13 +57,6 @@ class Pickup_From_Store_Settings implements Setting_Page_Interface {
       <input type="checkbox" name="sp_pickup_delivery" <?= $val ? 'checked="cheked"' : '' ?>>
       <span class="slider round"></span>
     </label>
-    <?php
-  }
-
-  function sp_pickup_show_person_blessing_html () {
-    $val = get_option('sp_pickup_show_person_blessing');
-    ?>
-    <input type="checkbox" name="sp_pickup_show_person_blessing" <?= esc_attr($val) ? 'checked' : '' ?>>
     <?php
   }
 }

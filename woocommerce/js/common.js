@@ -137,8 +137,6 @@ jQuery(document).ready( async () => {
         minDate = 1;
       }
 
-      console.log('before init: ', deliveryTime);
-
       $(selector).datepicker('destroy');
 
       $(selector).datepicker({
@@ -157,8 +155,6 @@ jQuery(document).ready( async () => {
           for (const key in deliveryTime) {
             if ( deliveryTime[key].slots.length ) filledDays.push(key);
           }
-
-          console.log('inside loop', deliveryTime);
 
           let toShowDay =
             (holidays.indexOf(string) === -1) &&
