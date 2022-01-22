@@ -84,7 +84,7 @@ jQuery(document).ready( async () => {
     function isPastTime ( time ) {
       if ( !time ) return false;
 
-      let d1 = new Date();
+      let d1 = getIsraelCurrentDate();
       let d2 = transformTime(time);
 
       return d1.getTime() > d2.getTime();
@@ -97,8 +97,8 @@ jQuery(document).ready( async () => {
      */
     function isPastSlots ( slots ) {
       if ( !slots.length ) return;
-      let d1 = new Date();
-      let maxTime = slots[slots.length - 1][1];
+      let d1 = getIsraelCurrentDate();
+      let maxTime = slots[slots.length - 1][0];
       let d2 = transformTime(maxTime);
 
       // console.log(d1.getTime() > d2.getTime());
@@ -115,7 +115,7 @@ jQuery(document).ready( async () => {
     function setupDatepicker (selector, holidays, deliveryTime, layoutName) {
       let minDate = (isInternational() && sp_data.sameDayDelivery) ? 0 : 1;
       let days = sp_data.weekDays;
-      let curDate = new Date();
+      let curDate = getIsraelCurrentDate();
       let curDayName = days[curDate.getDay()];
       let timeSlots = deliveryTime[curDayName].slots;
 
@@ -217,7 +217,7 @@ jQuery(document).ready( async () => {
     function getOptionsHTML ( dateString, deliveryTime, contactReceiver, showPreparationTime, isLocalPickup ) {
       let dateArray = dateString.split('/');
       const targetDate = new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`);
-      const currentDate = new Date();
+      const currentDate = getIsraelCurrentDate();
       const targetDayName = sp_data.weekDays[targetDate.getDay()];
       let preparationTime = deliveryTime[targetDayName].preparationTime;
       let optionsHTML = '<option disabled>Choose time</option>';
@@ -235,7 +235,7 @@ jQuery(document).ready( async () => {
 
           for (let index = hourFrom; index <= hourTo; index++) {
 
-            let target = new Date();
+            let target = getIsraelCurrentDate();
             target.setHours(index);
             target.setMinutes(+dateTo.split(':')[1]);
 
@@ -251,7 +251,7 @@ jQuery(document).ready( async () => {
         });
       } else {
         slots.forEach(([dateFrom, dateTo]) => {
-          let target = transformTime(dateTo);
+          let target = transformTime(dateFrom);
 
           if (
             (SELECTED_COUNTRY.toLocaleLowerCase() === 'israel') &&
@@ -454,7 +454,7 @@ jQuery(document).ready( async () => {
     function handleLayoutChange (e, {layoutName}) {
       const default_branch = BRANCHES.find(b => b.isDefault);
 
-      if ( !layoutName === 'local_pickup' || !default_branch ) return;
+      if ( layoutName !== 'local_pickup' || !default_branch ) return;
 
       // +1 because there are 2 branches but 3 items in select where the 1 is placeholder
       $(branchesSelector).get(0).selectedIndex = BRANCHES.indexOf(default_branch) + 1;
@@ -501,7 +501,7 @@ jQuery(document).ready( async () => {
   function transformTime ( timeString ) {
     let hours = +timeString.split(':')[0];
     let minutes = +timeString.split(':')[1];
-    let date = new Date();
+    let date = getIsraelCurrentDate();
     date.setHours(hours);
     date.setMinutes(minutes);
     return date;
@@ -529,6 +529,14 @@ jQuery(document).ready( async () => {
    */
   function isInternational () {
     return CURRENT_LAYOUT !== 'local_pickup' && SELECTED_COUNTRY.toLowerCase() !== 'israel';
+  }
+
+  function getIsraelCurrentDate () {
+    const d = new Date();
+    d.setHours(d.getUTCHours());
+    d.setMinutes(d.getUTCMinutes());
+    d.setSeconds(d.getUTCSeconds());
+    return d;
   }
 
 // end of script
