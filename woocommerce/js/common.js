@@ -198,6 +198,8 @@ jQuery(document).ready( async () => {
       let branchHolidays = BRANCHES[SELECTED_BRANCH].holidays;
       let branchDeliveryTime = BRANCHES[SELECTED_BRANCH].schedule;
 
+      $(datepickerSelector).val('');
+
       setupDatepicker(
         datepickerSelector,
         branchHolidays,
