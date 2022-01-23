@@ -752,7 +752,7 @@ class Woocommerce_Settings {
 
   function order_customer_detail_modifier ( $address, $raw_address, $order ) {
     $order_id = $order -> get_id();
-    $html = $address . "<br>";
+    $html = "";
     $country = get_post_meta($order_id, '_billing_country', true);
     $is_local_pickup = !get_post_meta( $order_id, '_billing_delivery_city', true ) && $country === 'Israel';
     $is_contact_receiver = preg_match('/[a-zA-Z]/', get_post_meta( $order_id, '_billing_delivery_timeset', true ));
