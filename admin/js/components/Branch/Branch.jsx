@@ -40,6 +40,8 @@ function Branch({ id, schedule, holidays, name, isDefault }) {
 
       <Schedule schedule={schedule} branchId={id} />
 
+      <h4>Holidays</h4>
+
       <Holidays holidays={holidays} branchId={id} />
     </details>
   );
