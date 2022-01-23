@@ -99,9 +99,14 @@ jQuery(document).ready( async () => {
      * @param {Array} slots array of time slots
      * @returns {Boolean}
      */
-    function isPastSlots ( slots ) {
+    function isPastSlots ( slots, incrementInMinutes ) {
       if ( !slots.length ) return;
       let d1 = getIsraelCurrentDate();
+
+      if ( incrementInMinutes ) {
+        d1.setMinutes( d1.getMinutes() + +incrementInMinutes );
+      }
+
       let maxTime = slots[slots.length - 1][0];
       let d2 = transformTime(maxTime);
 
@@ -137,7 +142,7 @@ jQuery(document).ready( async () => {
         minDate = 0;
       }
 
-      if ( isPastSlots(timeSlots) ) {
+      if ( isPastSlots(timeSlots, deliveryTime[curDayName].preparationTime ) ) {
         minDate = 1;
       }
 
@@ -542,7 +547,7 @@ jQuery(document).ready( async () => {
 
   function getIsraelCurrentDate () {
     const d = new Date();
-    d.setHours(d.getUTCHours());
+    d.setHours(d.getUTCHours() + 2);
     d.setMinutes(d.getUTCMinutes());
     d.setSeconds(d.getUTCSeconds());
     return d;
