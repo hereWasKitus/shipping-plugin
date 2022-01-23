@@ -287,7 +287,12 @@ jQuery(document).ready( async () => {
       $(timeSelectSelector).html( getOptionsHTML(dateString, delivery, contactReceiver, showPreparationTime, isLocalPickup()) );
     }
 
+    function handleBranchChange () {
+      $(timeSelectSelector).html(`<option selected disabled>Choose time</option>`);
+    }
+
     $(document.body).on(SP_EVENTS.dateChange, handleDateChange);
+    $(document.body).on(SP_EVENTS.branchChange, handleBranchChange);
   })(jQuery);
 
   /**
