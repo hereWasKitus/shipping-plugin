@@ -99,18 +99,17 @@ jQuery(document).ready( async () => {
      * @param {Array} slots array of time slots
      * @returns {Boolean}
      */
-    function isPastSlots ( slots, incrementInMinutes ) {
+    function isPastSlots ( slots, incrementInMinutes, isLocalPickup = false ) {
       if ( !slots.length ) return;
+
       let d1 = getIsraelCurrentDate();
 
       if ( incrementInMinutes ) {
         d1.setMinutes( d1.getMinutes() + +incrementInMinutes );
       }
 
-      let maxTime = slots[slots.length - 1][0];
+      let maxTime = isLocalPickup ? slots[slots.length - 1][1] : slots[slots.length - 1][0];
       let d2 = transformTime(maxTime);
-
-      // console.log(d1.getTime() > d2.getTime());
       return d1.getTime() > d2.getTime();
     }
 
@@ -142,7 +141,7 @@ jQuery(document).ready( async () => {
         minDate = 0;
       }
 
-      if ( isPastSlots(timeSlots, deliveryTime[curDayName].preparationTime ) ) {
+      if ( isPastSlots(timeSlots, deliveryTime[curDayName].preparationTime, isLocalPickup() ) ) {
         minDate = 1;
       }
 
