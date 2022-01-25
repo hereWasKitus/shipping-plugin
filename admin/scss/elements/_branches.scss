@@ -5,21 +5,25 @@
   margin: 16px 0 0;
 
   li:not(:last-child) {
-    margin-bottom: 10px;
+    margin-bottom: 16px;
   }
 }
 
 .delivery-branch {
-  &__remove-btn {
-    display: inline-block;
-    margin-left: 10px;
+  // &.is-disabled {
 
-    &:hover {
-      color: $color-red;
+  // }
+
+  summary {
+    & > *:not(:last-child) {
+      margin-inline-end: 16px;
     }
   }
 
-  &__checkbox-container {
-    margin-left: 16px;
+  &__remove-btn {
+    display: inline-block;
+    &:hover {
+      color: $color-red;
+    }
   }
 }

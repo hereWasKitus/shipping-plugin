@@ -273,18 +273,17 @@
   margin: 16px 0 0;
 }
 .delivery-branch-list li:not(:last-child) {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
+.delivery-branch summary > *:not(:last-child) {
+  margin-inline-end: 16px;
+}
 .delivery-branch__remove-btn {
   display: inline-block;
-  margin-left: 10px;
 }
 .delivery-branch__remove-btn:hover {
   color: #e74c3c;
-}
-.delivery-branch__checkbox-container {
-  margin-left: 16px;
 }
 
 .blessings-container {

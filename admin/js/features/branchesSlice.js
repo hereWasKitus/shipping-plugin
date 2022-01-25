@@ -9,7 +9,8 @@ const createEmptyBranch = (name = '') => {
     name: name || 'new branch',
     schedule: {},
     holidays: [],
-    isDefault: false
+    isDefault: false,
+    isDisabled: false
   }
 
   days.forEach(day => {
@@ -79,6 +80,11 @@ export const branchesSlice = createSlice({
     setHolidays: (state, {payload: {branchId, holidays}}) => {
       const branch = state.find(b => b.id === branchId );
       branch.holidays = holidays;
+    },
+
+    setDisabled: (state, {payload: {branchId, value}}) => {
+      const branch = state.find(b => b.id === branchId );
+      branch.isDisabled = value;
     }
   }
 })
@@ -92,7 +98,8 @@ export const {
   editDay,
   setHolidays,
   setBranchName,
-  removeBranch } = branchesSlice.actions;
+  removeBranch,
+  setDisabled } = branchesSlice.actions;
 
 export const selectBranches = state => state.branches;
 

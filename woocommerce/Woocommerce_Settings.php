@@ -163,6 +163,7 @@ class Woocommerce_Settings {
 
     if (is_array($branches) && count($branches)) {
       foreach ($branches as $index => $branch ) {
+        if ( isset($branch['isDisabled']) && $branch['isDisabled'] ) continue;
         $key = "{$branch['name']}_$index";
         $res[$key] = $branch['name'];
       }

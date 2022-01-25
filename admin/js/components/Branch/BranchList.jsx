@@ -22,7 +22,8 @@ function BranchList() {
               holidays={b.holidays}
               name={b.name}
               schedule={b.schedule}
-              isDefault={b.isDefault}
+              isDefault={Boolean(b.isDefault)}
+              isDisabled={Boolean(b.isDisabled)}
             />
           </li>
         ))}

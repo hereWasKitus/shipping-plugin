@@ -8,6 +8,7 @@ jQuery(document).ready( async () => {
   let SELECTED_BRANCH = 0;
   let CURRENT_LAYOUT = 'delivery'; // delivery | international_delivery | israel_delivery | local_pickup
   let BRANCHES = deepJSONParse(sp_data.deliveryTime.pickup_branches);
+  BRANCHES = BRANCHES.filter(b => Boolean(b.isDisabled) === false);
 
   /**
    * Replace checkout form with new template
