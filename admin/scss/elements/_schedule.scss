@@ -45,12 +45,18 @@
 
       .js-remove-slot,
       .remove-slot {
-        margin-left: 15px;
+        margin-inline-start: 15px;
         transition: color $transition-duration ease;
 
         &:hover {
           color: $color-red;
         }
+      }
+    }
+
+    label {
+      input {
+        width: 100%;
       }
     }
 

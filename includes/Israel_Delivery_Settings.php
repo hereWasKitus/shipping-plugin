@@ -116,8 +116,14 @@ class Israel_Delivery_Settings implements Setting_Page_Interface {
             <?php endif; ?>
           </ul>
           <button class="button button-primary js-add-schedule">Add +</button>
-          <input autocomplete="new-password" value="<?= $next_day_delivery ?>" class="next-day-delivery js-timepicker" type="text" style="display: block; margin: 10px auto 0;">
-          <input autocomplete="new-password" value="<?= $preparation_time ?>" class="preparation-time" type="number" style="display: block; margin: 10px auto 0;" placeholder="Preparation time">
+          <label style="display: block; margin: 10px auto 0;">
+            <span>Last time to order</span>
+            <input autocomplete="new-password" value="<?= $next_day_delivery ?>" class="next-day-delivery js-timepicker" type="text">
+          </label>
+          <label style="display: block; margin: 10px auto 0;">
+            <span>Preparation time</span>
+            <input autocomplete="new-password" value="<?= $preparation_time ?>" class="preparation-time" type="number" placeholder="Preparation time">
+          </label>
         </div>
       <?php endforeach; ?>
       <input class="sp-schedule-input" type="hidden" name="sp_israel_delivery_time" value="<?php echo esc_attr($val) ?>" />
