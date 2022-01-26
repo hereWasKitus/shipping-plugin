@@ -225,7 +225,7 @@ jQuery(document).ready( async () => {
     const timeSelectSelector = '.sp-wc-time select';
     const deliveryTime = deepJSONParse(sp_data.deliveryTime);
 
-    function getOptionsHTML ( dateString, deliveryTime, contactReceiver, showPreparationTime, isLocalPickup ) {
+    function getOptionsHTML ( dateString, deliveryTime, contactReceiver, showPreparationTime, isLocalPickup, sameDayDelivery ) {
       let dateArray = dateString.split('/');
       const targetDate = new Date(`${dateArray[1]}/${dateArray[0]}/${dateArray[2]}`);
       const currentDate = getIsraelCurrentDate();
@@ -265,6 +265,14 @@ jQuery(document).ready( async () => {
           let target = transformTime(dateFrom);
 
           if (
+            (SELECTED_COUNTRY.toLocaleLowerCase() !== 'israel') &&
+            (currentDate.getDate() === targetDate.getDate()) &&
+            sameDayDelivery &&
+            (currentDate.getTime() > target.getTime()) ) {
+            return;
+          }
+
+          if (
             (SELECTED_COUNTRY.toLocaleLowerCase() === 'israel') &&
             (currentDate.getDate() === targetDate.getDate()) &&
             (currentDate.getTime() > target.getTime()) ) {
@@ -291,7 +299,7 @@ jQuery(document).ready( async () => {
       let contactReceiver = (isIsrael() && sp_data.contactReceiver.israel ) || (isInternational() && sp_data.contactReceiver.international );
       let showPreparationTime = isIsrael() || isLocalPickup();
 
-      $(timeSelectSelector).html( getOptionsHTML(dateString, delivery, contactReceiver, showPreparationTime, isLocalPickup()) );
+      $(timeSelectSelector).html( getOptionsHTML(dateString, delivery, contactReceiver, showPreparationTime, isLocalPickup(), sp_data.sameDayDelivery) );
     }
 
     function handleBranchChange () {
