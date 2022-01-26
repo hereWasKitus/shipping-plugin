@@ -164,9 +164,10 @@ class Woocommerce_Settings {
     $res = ['Select branch'];
 
     if (is_array($branches) && count($branches)) {
-      foreach ($branches as $index => $branch ) {
+      foreach ($branches as $branch ) {
         if ( isset($branch['isDisabled']) && $branch['isDisabled'] ) continue;
-        $key = "{$branch['name']}_$index";
+        $sku = isset($branch['sku']) ? $branch['sku'] : '';
+        $key = "{$branch['name']}_$sku";
         $res[$key] = $branch['name'];
       }
     }
@@ -816,8 +817,8 @@ class Woocommerce_Settings {
 
     if ( get_post_meta( $order_id, '_billing_delivery_branch', true ) ) {
       $val = get_post_meta( $order_id, '_billing_delivery_branch', true );
-      $val = substr($val, 0, strlen($val) - 2); // remove postfix
-      $html .= "Local delivery branch: $val<br>";
+      $val = explode('_', $val); // remove postfix
+      $html .= "Local delivery branch: {$val[0]}<br>";
     }
 
     // delivery branch
@@ -914,8 +915,8 @@ class Woocommerce_Settings {
 
     if ( get_post_meta( $order_id, '_billing_delivery_branch', true ) ) {
       $val = get_post_meta( $order_id, '_billing_delivery_branch', true );
-      $val = substr($val, 0, strlen($val) - 2); // remove postfix
-      $html .= "<p>Local delivery branch: $val</p>";
+      $val = explode('_', $val); // remove postfix
+      $html .= "<p>Local delivery branch: {$val[0]}</p>";
     }
 
     $day_title = $is_local_pickup ? 'Local pick up day: ' : 'Delivery day: ';

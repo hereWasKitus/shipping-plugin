@@ -24,6 +24,7 @@ function BranchList() {
               schedule={b.schedule}
               isDefault={Boolean(b.isDefault)}
               isDisabled={Boolean(b.isDisabled)}
+              sku={b.sku ?? ''}
             />
           </li>
         ))}
