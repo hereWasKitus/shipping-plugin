@@ -256,7 +256,6 @@ import BranchApp from './components/Branch/BranchApp.jsx';
     }
 
     const skuInput = document.createElement('input');
-    skuInput.required = true;
     skuInput.placeholder = 'SKU';
     skuInput.type = 'text';
     skuInput.value = sku;
