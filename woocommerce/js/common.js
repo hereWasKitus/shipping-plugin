@@ -483,6 +483,17 @@ jQuery(document).ready( async () => {
 
   // ==================================================
 
+  // Prevent entering numbers in address field
+  ($ => {
+
+    $(document.body).on('keypress', '[name="billing_address_1"]', e => {
+      if ( e.key >= 0 ) e.preventDefault();
+    });
+
+  })(jQuery);
+
+  // ==================================================
+
   /**
    * Deep JSON parse
    * @param {String|Object} json - JSON string or Object that contains JSON strings
