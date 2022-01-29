@@ -578,10 +578,17 @@ class Woocommerce_Settings {
     $base_data = $order -> get_base_data();
     $country = $base_data['billing']['country'];
     $city = $base_data['billing']['city'] ?: get_post_meta( $order_id, '_billing_delivery_city', true );
+    $branch_value = explode('_', get_post_meta($order_id, '_billing_delivery_branch', true));
+    $branch_name = $branch_value[0];
+    $branch_sku = isset($branch_value[1]) ? $branch_value[1] : '';
     $result = '';
 
+    if ( $branch_name ) {
+      update_post_meta($order_id, '_branch_name', $branch_name);
+    }
+
     if ( strtolower($country) === 'israel' && !$city ) {
-      update_post_meta($order_id, '_sku', '');
+      update_post_meta($order_id, '_sku', $branch_sku);
       return;
     }
 
@@ -609,6 +616,8 @@ class Woocommerce_Settings {
     $delivery_timeset = get_post_meta( $order_id, '_billing_delivery_timeset', true );
     $is_local_pickup = !get_post_meta( $order->get_id(), '_billing_delivery_city', true ) && $base_data['billing']['country'] === 'Israel';
     $delivery_time = false;
+    $branch_name = get_post_meta( $order_id, '_branch_name', true );
+    $city_field = '';
 
     if ( !$is_contact_receiver ) {
       $delivery_time = [
@@ -618,9 +627,15 @@ class Woocommerce_Settings {
     }
     $paydate = $order -> get_date_paid() ?? $order -> get_date_created();
 
+    if ( $branch_name ) {
+      $city_field = $branch_name;
+    } else {
+      $city_field = $base_data['billing']['city'] ?: get_post_meta( $order->get_id(), '_billing_delivery_city', true );
+    }
+
     $city_field_data = array_filter([
       get_post_meta( $order->get_id(), '_billing_delivery_region', true ),
-      $base_data['billing']['city'] ?: get_post_meta( $order->get_id(), '_billing_delivery_city', true ),
+      $city_field,
       $is_international ? $base_data['billing']['country'] : ''
     ]);
 
@@ -786,6 +801,14 @@ class Woocommerce_Settings {
       $html .= "Apartment: $val<br>";
     }
 
+    if ( get_post_meta( $order_id, '_billing_delivery_city', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_delivery_city', true );
+      $html .= "City: $val<br>";
+    } else if ( get_post_meta( $order_id, '_billing_city', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_city', true );
+      $html .= "City: $val<br>";
+    }
+
     if ( get_post_meta( $order_id, '_billing_delivery_region', true ) ) {
       $val = get_post_meta( $order_id, '_billing_delivery_region', true );
       $html .= "Region: $val<br>";
@@ -846,7 +869,7 @@ class Woocommerce_Settings {
 
   function order_view_page_modifier( $order ) {
     $show_shipping = ! wc_ship_to_billing_address_only() && $order->needs_shipping_address();
-    if ( !is_account_page() || $show_shipping ) return;
+    if ( $show_shipping ) return;
 
     $order_id = $order -> get_id();
     $html = "
@@ -882,6 +905,14 @@ class Woocommerce_Settings {
     if ( get_post_meta( $order_id, '_billing_delivery_apartment', true ) ) {
       $val = get_post_meta( $order_id, '_billing_delivery_apartment', true );
       $html .= "<p>Apartment: $val</p>";
+    }
+
+    if ( get_post_meta( $order_id, '_billing_delivery_city', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_delivery_city', true );
+      $html .= "<p>City: $val</p>";
+    } else if ( get_post_meta( $order_id, '_billing_city', true ) ) {
+      $val = get_post_meta( $order_id, '_billing_city', true );
+      $html .= "<p>City: $val</p>";
     }
 
     if ( get_post_meta( $order_id, '_billing_delivery_region', true ) ) {

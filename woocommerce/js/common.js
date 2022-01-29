@@ -235,7 +235,7 @@ jQuery(document).ready( async () => {
 
       let slots = deliveryTime[targetDayName].slots;
 
-      if ( preparationTime && showPreparationTime ) {
+      if ( (currentDate.getDate() === targetDate.getDate()) && preparationTime && showPreparationTime ) {
         currentDate.setMinutes(+preparationTime + currentDate.getMinutes());
       }
 
@@ -247,6 +247,7 @@ jQuery(document).ready( async () => {
           for (let index = hourFrom; index <= hourTo; index++) {
 
             let target = getIsraelCurrentDate();
+            target.setDate(targetDate.getDate());
             target.setHours(index);
             target.setMinutes(+dateTo.split(':')[1]);
 
@@ -263,6 +264,7 @@ jQuery(document).ready( async () => {
       } else {
         slots.forEach(([dateFrom, dateTo]) => {
           let target = transformTime(dateFrom);
+          target.setDate( targetDate.getDate() );
 
           if (
             (SELECTED_COUNTRY.toLocaleLowerCase() !== 'israel') &&
