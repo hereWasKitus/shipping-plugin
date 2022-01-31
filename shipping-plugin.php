@@ -24,9 +24,6 @@ define( 'PLUGIN_SLUG', 'shipping-plugin' );
 
 $instance = new Shipping_Plugin();
 
-if (
-  in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_and_valid_plugins() )
-  || in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_network_plugins() )
-) {
+if ( in_array( trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php', wp_get_active_and_valid_plugins() ) ) {
   $wcsettings = new SP\Woocommerce\Woocommerce_Settings();
 }

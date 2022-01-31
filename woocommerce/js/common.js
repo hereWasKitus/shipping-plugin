@@ -410,8 +410,10 @@ jQuery(document).ready( async () => {
      */
     const handleBlessingSelect = e => {
       e.preventDefault();
+      console.log('kkk');
       const text = e.currentTarget.parentElement.querySelector('p').textContent;
-      $('[name="billing_another_person_blessing"]').text( text );
+      $('[name="billing_another_person_blessing"]').get(0).value = text;
+      console.log($('[name="billing_another_person_blessing"]'), text);
       $(blessingPopupSelector).removeClass('is-active');
     }
 
