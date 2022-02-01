@@ -403,6 +403,7 @@ jQuery(document).ready( async () => {
       const { value } = e.target;
       await fillPopup( value );
       $(blessingPopupSelector).addClass('is-active');
+      e.target.selectedIndex = 0;
     }
 
     /**
@@ -413,7 +414,6 @@ jQuery(document).ready( async () => {
       console.log('kkk');
       const text = e.currentTarget.parentElement.querySelector('p').textContent;
       $('[name="billing_another_person_blessing"]').get(0).value = text;
-      console.log($('[name="billing_another_person_blessing"]'), text);
       $(blessingPopupSelector).removeClass('is-active');
     }
 
