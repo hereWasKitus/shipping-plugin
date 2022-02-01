@@ -501,9 +501,9 @@ jQuery(document).ready( async () => {
   // Prevent entering numbers in address field
   ($ => {
 
-    // $(document.body).on('keypress', '[name="billing_address_1"]', e => {
-    //   if ( e.key !== ' ' && Number.isInteger(+e.key) ) e.preventDefault();
-    // });
+    $(document.body).on('keypress', '[name="billing_address_1"]', e => {
+      if ( e.key !== ' ' && Number.isInteger(+e.key) ) e.preventDefault();
+    });
 
   })(jQuery);
 
