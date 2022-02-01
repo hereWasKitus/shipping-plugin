@@ -465,13 +465,6 @@ class Woocommerce_Settings {
       ];
     }
 
-    if ( get_post_meta( $order->get_id(), '_billing_delivery_house', true ) ) {
-      $fields['_billing_delivery_house'] = [
-        'label' => 'Delivery house',
-        'value' => get_post_meta( $order->get_id(), '_billing_delivery_house', true )
-      ];
-    }
-
     if ( get_post_meta( $order->get_id(), '_billing_delivery_floor', true ) ) {
       $fields['_billing_delivery_floor'] = [
         'label' => 'Floor',
