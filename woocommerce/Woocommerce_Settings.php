@@ -8,7 +8,7 @@ class Woocommerce_Settings {
   }
 
   public function setup_hooks () {
-    add_action('wp_enqueue_scripts', [$this, 'wc_scripts']);
+    add_action('wp_enqueue_scripts', [$this, 'wc_scripts'], 100);
     add_filter( 'woocommerce_checkout_fields', [$this, 'checkout_fields'] );
     add_filter( 'woocommerce_checkout_fields', [$this, 'sp_checkout_fields'] );
     add_filter( 'woocommerce_checkout_fields', [$this, 'sp_another_person_fields'] );
@@ -26,8 +26,18 @@ class Woocommerce_Settings {
 
   public function wc_scripts () {
     if (is_checkout()) {
+      // Remove select2 from checkout
+      wp_dequeue_style( 'select2' );
+      wp_deregister_style( 'select2' );
+
+      wp_dequeue_script( 'selectWoo');
+      wp_deregister_script('selectWoo');
+
+      // Include own select2 to fix strange behaviour of selectWoo
+      wp_enqueue_script('jquery-select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', ['jquery'], null, true);
+      wp_enqueue_style('jquery-select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css');
+
       wp_enqueue_script('jquery-ui', PLUGIN_DIR . 'libs/jquery-ui/jquery-ui.min.js', ['jquery'], null, true);
-      // wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/main.js', ['jquery-ui'], false, true );
       wp_enqueue_script( 'sp-checkout', PLUGIN_DIR . '/woocommerce/js/common.js', ['jquery-ui'], false, true );
       wp_localize_script('sp-checkout', 'sp_data', [
         'ajaxUrl' => admin_url('admin-ajax.php'),

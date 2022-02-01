@@ -502,7 +502,7 @@ jQuery(document).ready( async () => {
   ($ => {
 
     $(document.body).on('keypress', '[name="billing_address_1"]', e => {
-      if ( e.key !== ' ' && Number.isInteger(+e.key) ) e.preventDefault();
+      if ( e.key !== ' ' && e.key >= 0 ) e.preventDefault();
     });
 
   })(jQuery);
