@@ -172,6 +172,9 @@ jQuery(document).ready( async () => {
           return [toShowDay, "", tooltip];
         }
       })
+
+      const placeholer = layoutName === 'local_pickup' ? 'תאריך איסוף' : 'תאריך משלוח';
+      $(selector).attr('placeholder', placeholer);
     }
 
     function handleLayoutChange (e, {layoutName}) {
@@ -319,7 +322,7 @@ jQuery(document).ready( async () => {
     const countrySelector = 'select#billing_country';
     const citySelector = '.sp-wc-city select';
 
-    // $(countrySelector).select2();
+    $(countrySelector).select2();
     $(citySelector).select2();
 
     function handleCountryChange (e) {
@@ -498,9 +501,9 @@ jQuery(document).ready( async () => {
   // Prevent entering numbers in address field
   ($ => {
 
-    $(document.body).on('keypress', '[name="billing_address_1"]', e => {
-      if ( e.key >= 0 ) e.preventDefault();
-    });
+    // $(document.body).on('keypress', '[name="billing_address_1"]', e => {
+    //   if ( e.key !== ' ' && Number.isInteger(+e.key) ) e.preventDefault();
+    // });
 
   })(jQuery);
 
