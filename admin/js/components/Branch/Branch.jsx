@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Holidays from './Holidays';
 import Schedule from './Schedule';
-import { setBranchName, removeBranch, setDefault, setDisabled, setSku } from '../../features/branchesSlice';
+import { setBranchName, removeBranch, setDefault, setDisabled, setSku, cloneConfigFromDefault } from '../../features/branchesSlice';
 import { useDispatch } from 'react-redux';
 
 function Branch({ id, schedule, holidays, name, isDefault, isDisabled, sku }) {
@@ -44,6 +44,11 @@ function Branch({ id, schedule, holidays, name, isDefault, isDisabled, sku }) {
     }));
   }
 
+  const cloneConfiguration = e => {
+    e.preventDefault();
+    dispatch(cloneConfigFromDefault(id));
+  }
+
   return (
     <details className={branchClassname}>
       <summary>
@@ -58,6 +63,7 @@ function Branch({ id, schedule, holidays, name, isDefault, isDisabled, sku }) {
         </span>
 
         <button className={buttonClassname} onClick={handleBranchDisable}>{isDisabled ? 'Enable branch' : 'Disable branch'}</button>
+        {!isDefault && <button className="button button-primary" onClick={cloneConfiguration}>Take configuration from default branch</button>}
       </summary>
 
       <h4>SKU</h4>

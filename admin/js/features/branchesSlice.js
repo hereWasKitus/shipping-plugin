@@ -91,6 +91,17 @@ export const branchesSlice = createSlice({
     setSku: (state, {payload: {branchId, value}}) => {
       const branch = state.find(b => b.id === branchId );
       branch.sku = value;
+    },
+
+    cloneConfigFromDefault: (state, {payload: branchId}) => {
+      const defaultBranch = state.find(b => b.isDefault === true);
+
+      if ( !defaultBranch ) return state;
+
+      const index = state.findIndex(b => b.id === branchId );
+      const newState = [...state];
+      newState[index] = {...defaultBranch, id: uuid(), isDefault: false, name: `${defaultBranch.name} copy`};
+      return newState;
     }
   }
 })
@@ -106,7 +117,8 @@ export const {
   setBranchName,
   removeBranch,
   setDisabled,
-  setSku } = branchesSlice.actions;
+  setSku,
+  cloneConfigFromDefault } = branchesSlice.actions;
 
 export const selectBranches = state => state.branches;
 
