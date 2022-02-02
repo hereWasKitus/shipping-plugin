@@ -53,7 +53,7 @@ jQuery(document).ready( async () => {
   ($ => {
 
     const datepickerSelector = '.sp-wc-calendar .input-text';
-    const holidays = sp_data.holidays;
+    const holidays = deepJSONParse(sp_data.holidays);
     const deliveryTime = deepJSONParse(sp_data.deliveryTime);
 
     /**
@@ -115,6 +115,27 @@ jQuery(document).ready( async () => {
     }
 
     /**
+     *
+     * @param {Date} date date that need to be checked
+     * @param {Array<String>} holidays array of strings format mm/dd/yyyy
+     */
+    function isHoliday(date, holidays) {
+      if ( !holidays.length ) return false;
+
+      let res = false;
+
+      holidays.forEach(holiday => {
+        if ( res ) return;
+        const d = new Date(holiday);
+        if ( d.getDate() === date.getDate() && d.getMonth() === date.getMonth() ) {
+          res = true;
+        }
+      })
+
+      return res;
+    }
+
+    /**
      * Setup datepicker
      * @param {String} selector DOM node selector
      * @param {Array<String>} holidays Date strings of holidays
@@ -154,7 +175,7 @@ jQuery(document).ready( async () => {
         beforeShowDay ( date ) {
           let tooltipText = sp_data.tooltipText;
           let string = jQuery.datepicker.formatDate('mm/dd/yy', date);
-          let tooltip = holidays.indexOf(string) > -1 || date.getTime() < curDate.getTime()
+          let tooltip = isHoliday(date, holidays) || date.getTime() < curDate.getTime()
             ? tooltipText
             : '';
 
@@ -166,7 +187,7 @@ jQuery(document).ready( async () => {
           }
 
           let toShowDay =
-            (holidays.indexOf(string) === -1) &&
+            !isHoliday(date, holidays) &&
             (filledDays.indexOf(loopDayName) >= 0);
 
           return [toShowDay, "", tooltip];
