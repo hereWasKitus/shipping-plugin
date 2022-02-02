@@ -536,6 +536,14 @@ class Woocommerce_Settings {
     }
 
     // local delivery branch
+    if ( get_post_meta( $order->get_id(), '_billing_delivery_branch', true ) ) {
+      $val = get_post_meta( $order->get_id(), '_billing_delivery_branch', true );
+      $val = explode('_', $val); // remove postfix
+      $fields['_billing_delivery_branch'] = [
+        'label' => 'Local delivery branch',
+        'value' => $val[0]
+      ];
+    }
 
     if ( get_post_meta( $order->get_id(), '_billing_delivery_day', true ) ) {
       $fields['_billing_delivery_day'] = [
